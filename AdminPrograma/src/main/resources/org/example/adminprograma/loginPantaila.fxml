@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane stylesheets="@Estiloak.css" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="900.0" style="-fx-background-color: White;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.adminprograma.Kontrola">
+   <children>
+      <VBox fx:id="mainVbox" alignment="CENTER" layoutX="470.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="550.0" prefWidth="430.0" style="-fx-background-color: #B5424B;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="470.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" prefHeight="52.0" prefWidth="430.0">
+               <children>
+                  <Label fx:id="lblErabiltzailea" prefHeight="45.0" prefWidth="235.0" text="Erabiltzailea:" textFill="WHITE">
+                     <font>
+                        <Font name="Cascadia Code Regular" size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="70.0" prefWidth="326.0">
+               <children>
+                  <TextField fx:id="txtErabiltzailea" prefHeight="43.0" prefWidth="381.0">
+                     <font>
+                        <Font name="Cascadia Code Regular" size="18.0" />
+                     </font></TextField>
+               </children>
+               <padding>
+                  <Insets left="20.0" right="20.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="52.0" prefWidth="430.0">
+               <children>
+                  <Label fx:id="lblPasahitza" prefHeight="27.0" prefWidth="224.0" text="Pasahitza:" textFill="WHITE">
+                     <font>
+                        <Font name="Cascadia Code Regular" size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+                <padding>
+                    <Insets left="20.0" right="20.0" />
+                </padding>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets left="20.0" right="20.0" />
+               </padding></HBox>
+            <HBox alignment="CENTER" prefHeight="74.0" prefWidth="430.0">
+               <children>
+                  <PasswordField fx:id="txtPasahitza" prefHeight="43.0" prefWidth="381.0">
+                     <font>
+                        <Font name="Cascadia Code Regular" size="18.0" />
+                     </font></PasswordField>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="btnLogin" alignment="CENTER" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnLoginEgin" prefHeight="56.0" prefWidth="180.0" style="-fx-background-color: #373F47;" styleClass="\@Estiloak.css" text="Saioa hasi" textFill="WHITE">
+                      <font>
+                          <Font name="Cascadia Code Regular" size="24.0" />
+                      </font>
+                  </Button>
+               </children>
+               <padding>
+                  <Insets right="20.0" />
+               </padding>
+            </HBox>
+         </children>
+      </VBox>
+      <HBox alignment="CENTER" layoutY="-1.0" prefHeight="550.0" prefWidth="472.0" style="-fx-background-color: #FCFEFC;">
+         <children>
+            <ImageView fitHeight="547.0" fitWidth="470.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../irudiak/SushineliLogo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+      <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="900.0">
+         <children>
+             <Button fx:id="btnMinimizatu" mnemonicParsing="false" onAction="#lehioaJaitsi" prefHeight="27.0" prefWidth="51.0" style="-fx-background-color: transparent;" styleClass="\@Estiloak.css" text="_" textFill="WHITE">
+               <font>
+                  <Font name="Verdana Bold" size="18.0" />
+               </font></Button>
+            <Button fx:id="btnItxi" mnemonicParsing="false" prefHeight="29.0" prefWidth="50.0" style="-fx-background-color: transparent;" styleClass="\@Estiloak.css" text="X" textFill="WHITE">
+               <font>
+                  <Font name="Verdana Bold" size="18.0" />
+               </font></Button>
+         </children></HBox>
+   </children>
+</AnchorPane>
