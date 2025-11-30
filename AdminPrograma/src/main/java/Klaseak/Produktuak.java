@@ -5,14 +5,14 @@ public class Produktuak {
     private String izena;
     private double prezioa;
     private int stock;
-    private int produktuen_motak;
+    private int produktu_motak;
 
-    public Produktuak(int id, String izena, double prezioa, int stock, int produktuen_motak) {
+    public Produktuak(int id, String izena, double prezioa, int stock, int produktu_motak) {
         this.id = id;
         this.izena = izena;
         this.prezioa = prezioa;
         this.stock = stock;
-        this.produktuen_motak = produktuen_motak;
+        this.produktu_motak = produktu_motak;
     }
 
     public void setId(int id) {
@@ -31,8 +31,8 @@ public class Produktuak {
         this.stock = stock;
     }
 
-    public void setProduktuen_motak(int produktuen_motak) {
-        this.produktuen_motak = produktuen_motak;
+    public void setProduktu_motak(int produktu_motak) {
+        this.produktu_motak = produktu_motak;
     }
 
     public int getId() {
@@ -51,7 +51,7 @@ public class Produktuak {
         return stock;
     }
 
-    public int getProduktuen_motak() {
-        return produktuen_motak;
+    public int getProduktu_motak() {
+        return produktu_motak;
     }
 }

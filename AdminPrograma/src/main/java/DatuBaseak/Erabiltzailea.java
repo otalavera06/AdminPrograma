@@ -6,13 +6,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-public class Login extends MySql{
+public class Erabiltzailea extends MySql{
     private String erabiltzailea;
     private String pasahitza;
 
 
     public boolean loginaEgin(String erabiltzailea, String pasahitza){
-        boolean baliozkoa = false;
+        boolean baliozkoa = false; //erregistroak
         String sql = "select * from langileak where erabiltzailea = ? and pasahitza = ?";
         try(Connection conn = konektatu();
             PreparedStatement stm = conn.prepareStatement(sql)){
@@ -30,7 +30,7 @@ public class Login extends MySql{
         return baliozkoa;
     }
 
-    public Login() {
+    public Erabiltzailea() {
         super();
     }
 }

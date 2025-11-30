@@ -32,11 +32,11 @@
                   <ImageView fitHeight="28.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../../irudiak/capas.png" />
-                     </image>
+                          </image>
                   </ImageView>
                </graphic>
             </Label>
-            <Label fx:id="MenuBack" layoutX="45.0" layoutY="4.0" prefHeight="28.0" prefWidth="59.0" text="MENUA" textFill="WHITE">
+            <Label fx:id="MenuBack" layoutX="44.0" layoutY="4.0" prefHeight="28.0" prefWidth="59.0" text="MENUA" textFill="WHITE">
                <font>
                   <Font name="Verdana Bold" size="14.0" />
                </font>

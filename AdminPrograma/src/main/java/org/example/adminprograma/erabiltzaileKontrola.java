@@ -1,27 +1,19 @@
 package org.example.adminprograma;
 
-import DatuBaseak.Login;
-import DatuBaseak.MySql;
+import DatuBaseak.Erabiltzailea;
 import Pantailak.MenuPantaila;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.Background;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.w3c.dom.Text;
 
 import java.awt.*;
 import java.net.URL;
-import java.sql.Connection;
 import java.util.ResourceBundle;
 
-public class Kontrola implements Initializable {
+public class erabiltzaileKontrola implements Initializable {
 
     @FXML
     private TextField txtErabiltzailea;
@@ -56,7 +48,7 @@ public class Kontrola implements Initializable {
     protected void btnLoginEgin() {
         String erabiltzailea = txtErabiltzailea.getText();
         String pasahitza = txtPasahitza.getText();
-        Login logina = new Login();
+        Erabiltzailea logina = new Erabiltzailea();
         boolean egiaztatu = logina.loginaEgin(erabiltzailea, pasahitza);
         if (egiaztatu) {
             txtErabiltzailea.clear();
@@ -73,6 +65,7 @@ public class Kontrola implements Initializable {
         }else {
             txtErabiltzailea.clear();
             txtPasahitza.clear();
+            txtErabiltzailea.requestFocus();
             jakinarazpena.erakutsi(
                     "Errorea gaizki joan da.",
                     "Erabiltzailea edo pasahitzak oker daude.",

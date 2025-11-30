@@ -4,19 +4,17 @@ import Pantailak.LoginPantaila;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import org.example.adminprograma.Kontrola;
+import org.example.adminprograma.erabiltzaileKontrola;
 
-import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class menuKontrola extends Kontrola implements Initializable {
+public class menuKontrola extends erabiltzaileKontrola implements Initializable {
     @FXML
     private Button btnItxi;
     @FXML
@@ -37,7 +35,22 @@ public class menuKontrola extends Kontrola implements Initializable {
            System.exit(0);
         });
         slider.setTranslateX(-176);
+        MenuBack.setVisible(false);
         Menu.setOnMouseClicked(e -> {
+            TranslateTransition slide = new TranslateTransition();
+            slide.setDuration(Duration.seconds(0.4));
+            slide.setNode(slider);
+
+            slide.setToX(0);
+            slide.play();
+
+            slide.setOnFinished((Act)->{
+                Menu.setVisible(false);
+                MenuBack.setVisible(true);
+            });
+        });
+
+        MenuBack.setOnMouseClicked(e -> {
             TranslateTransition slide = new TranslateTransition();
             slide.setDuration(Duration.seconds(0.4));
             slide.setNode(slider);
@@ -45,12 +58,14 @@ public class menuKontrola extends Kontrola implements Initializable {
             slide.setToX(-176);
             slide.play();
 
-            slider.setTranslateX(-176);
+            slider.setTranslateX(0);
+
             slide.setOnFinished((Act)->{
                 Menu.setVisible(true);
                 MenuBack.setVisible(false);
             });
         });
+
     }
 
     @Override

@@ -24,7 +24,4 @@ public class LoginPantaila {
             e.printStackTrace();
         }
     }
-    public void itxiLogina(){
-
-    }
 }
