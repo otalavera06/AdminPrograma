@@ -7,3 +7,18 @@
     -fx-background-color: #146886;
     -fx-border-color: WHITE;
 }
+
+.menuBox {
+    -fx-background-color: #B5424B;
+    -fx-padding: 0;
+    -fx-spacing: 0;
+}
+
+.menuButton {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-family: "Verdana Bold";
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER;
+}
+

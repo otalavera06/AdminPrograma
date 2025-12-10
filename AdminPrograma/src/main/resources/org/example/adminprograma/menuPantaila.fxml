@@ -5,125 +5,67 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@Estiloak.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Kontroladoreak.menuKontrola">
-   <top>
-      <AnchorPane prefHeight="36.0" prefWidth="600.0" style="-fx-background-color: #E9C4C7;" BorderPane.alignment="CENTER_RIGHT">
-         <children>
-            <Button fx:id="btnItxi" layoutX="548.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="52.0" style="-fx-background-color: transparent;" text="X" textFill="WHITE">
-               <font>
-                  <Font name="Verdana Bold" size="18.0" />
-               </font>
-            </Button>
-            <Button fx:id="btnMinimizatu" layoutX="496.0" layoutY="-9.0" mnemonicParsing="false" onAction="#lehioaJaitsi" prefHeight="44.0" prefWidth="52.0" style="-fx-background-color: transparent;" text="_" textFill="WHITE">
-               <font>
-                  <Font name="Verdana Bold" size="18.0" />
-               </font>
-            </Button>
-            <Button fx:id="btnSaioaBukatu" layoutX="397.0" mnemonicParsing="false" onAction="#saioaBukatu" prefHeight="36.0" prefWidth="110.0" style="-fx-background-color: transparent;" text="Saioa itxi" textFill="WHITE">
-               <font>
-                  <Font name="Verdana Bold" size="14.0" />
-               </font>
-            </Button>
-            <Label fx:id="Menu" layoutX="14.0" layoutY="4.0" text="MENUA" textFill="WHITE">
-               <font>
-                  <Font name="Verdana Bold" size="14.0" />
-               </font>
-               <graphic>
-                  <ImageView fitHeight="28.0" fitWidth="31.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../../../irudiak/capas.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-            </Label>
-            <Label fx:id="MenuBack" layoutX="45.0" layoutY="4.0" prefHeight="28.0" prefWidth="59.0" text="MENUA" textFill="WHITE">
-               <font>
-                  <Font name="Verdana Bold" size="14.0" />
-               </font>
-            </Label>
-         </children>
-      </AnchorPane>
-   </top>
-   <left>
-      <AnchorPane fx:id="slider" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <children>
-            <VBox alignment="CENTER" prefHeight="367.0" prefWidth="170.0" style="-fx-background-color: #B5424B;">
-               <children>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent;">
-                    <items>
-                      <Button fx:id="btnList1" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="26.0" prefWidth="109.0" style="-fx-background-color: transparent;" styleClass="\\@Estilak.css" text="Produktuak" textFill="WHITE">
-                           <font>
-                              <Font name="Verdana Bold" size="12.0" />
-                           </font>
+<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@Estiloak.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Kontroladoreak.menuKontrola">
+
+    <top>
+        <!-- Tu barra superior igual que antes -->
+        <AnchorPane prefHeight="36.0" style="-fx-background-color: #E9C4C7;">
+            <children>
+                <!-- Labels a la izquierda -->
+                <Label fx:id="Menu" layoutX="14.0" layoutY="4.0" text="MENUA" textFill="WHITE">
+                    <font><Font name="Verdana Bold" size="14.0" /></font>
+                    <graphic>
+                        <ImageView fitHeight="28.0" fitWidth="31.0" preserveRatio="true">
+                            <image>
+                                <Image url="@../../../irudiak/capas.png" />
+                            </image>
+                        </ImageView>
+                    </graphic>
+                </Label>
+                <Label fx:id="MenuBack" layoutX="45.0" layoutY="9.0" text="MENUA" textFill="WHITE">
+                    <font><Font name="Verdana Bold" size="14.0" /></font>
+                </Label>
+
+                <!-- Botones alineados a la derecha -->
+                <HBox alignment="CENTER_RIGHT" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <children>
+                        <Button fx:id="btnSaioaBukatu" onAction="#saioaBukatu" style="-fx-background-color: transparent;" text="Saioa itxi" textFill="WHITE">
+                            <font><Font name="Verdana Bold" size="14.0" /></font>
                         </Button>
-                    </items>
-                  </ToolBar>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent;">
-                    <items>
-                      <Button fx:id="btnList2" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="23.0" prefWidth="93.0" style="-fx-background-color: transparent;" text="Langileak" textFill="WHITE">
-                           <font>
-                              <Font name="Verdana Bold" size="12.0" />
-                           </font>
+                        <Button fx:id="btnMinimizatu" onAction="#lehioaJaitsi" style="-fx-background-color: transparent;" text="_" textFill="WHITE">
+                            <font><Font name="Verdana Bold" size="18.0" /></font>
                         </Button>
-                    </items>
-                  </ToolBar>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent;">
-                    <items>
-                      <Button fx:id="btnList3" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="23.0" prefWidth="95.0" style="-fx-background-color: transparent;" text="Erreserbak" textFill="WHITE">
-                           <font>
-                              <Font name="Verdana Bold" size="12.0" />
-                           </font>
+                        <Button fx:id="btnItxi" style="-fx-background-color: transparent;" text="X" textFill="WHITE">
+                            <font><Font name="Verdana Bold" size="18.0" /></font>
                         </Button>
-                    </items>
-                  </ToolBar>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent;">
-                    <items>
-                      <Button fx:id="btnList4" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="23.0" prefWidth="80.0" style="-fx-background-color: transparent;" text="Eskaerak" textFill="WHITE">
-                           <font>
-                              <Font name="Verdana Bold" size="12.0" />
-                           </font>
-                        </Button>
-                    </items>
-                  </ToolBar>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent;">
-                    <items>
-                      <Button fx:id="btnList5" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="23.0" prefWidth="79.0" style="-fx-background-color: transparent;" text="Fakturak" textFill="WHITE">
-                           <font>
-                              <Font name="Verdana Bold" size="12.0" />
-                           </font>
-                        </Button>
-                    </items>
-                  </ToolBar>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent;">
-                    <items>
-                      <Button fx:id="btnList6" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="23.0" prefWidth="112.0" style="-fx-background-color: transparent;" text="Erabiltzaileak" textFill="WHITE">
-                           <font>
-                              <Font name="Verdana Bold" size="12.0" />
-                           </font>
-                        </Button>
-                    </items>
-                  </ToolBar>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent;">
-                    <items>
-                      <Button fx:id="btnList7" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="23.0" prefWidth="74.0" style="-fx-background-color: transparent;" styleClass="\@Estiloak.css" text="Platerak" textFill="WHITE">
-                           <font>
-                              <Font name="Verdana Bold" size="12.0" />
-                           </font>
-                        </Button>
-                    </items>
-                  </ToolBar>
-                  <ToolBar prefHeight="40.0" prefWidth="200.0" style="-fx-background-color: transparent;">
-                    <items>
-                      <Button fx:id="btnList8" alignment="TOP_LEFT" mnemonicParsing="false" prefHeight="23.0" prefWidth="87.0" style="-fx-background-color: transparent;" styleClass="\@Estiloak.css" text="Finantzak" textFill="WHITE">
-                           <font>
-                              <Font name="Verdana Bold" size="12.0" />
-                           </font>
-                        </Button>
-                    </items>
-                  </ToolBar>
-               </children>
-            </VBox>
-         </children>
-      </AnchorPane>
-   </left>
+                    </children>
+                </HBox>
+            </children>
+        </AnchorPane>
+    </top>
+
+    <left>
+        <AnchorPane fx:id="slider" BorderPane.alignment="CENTER_LEFT">
+            <children>
+                <!-- StackPane centra el VBox dentro del AnchorPane -->
+                <StackPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                    <VBox fx:id="menuVBox" styleClass="menuBox"
+                          alignment="CENTER"
+                          spacing="10">
+                        <children>
+                            <Button fx:id="btnList1" text="Produktuak" styleClass="menuButton"/>
+                            <Button fx:id="btnList2" text="Langileak" styleClass="menuButton"/>
+                            <Button fx:id="btnList3" text="Erreserbak" styleClass="menuButton"/>
+                            <Button fx:id="btnList4" text="Eskaerak" styleClass="menuButton"/>
+                            <Button fx:id="btnList5" text="Fakturak" styleClass="menuButton"/>
+                            <Button fx:id="btnList6" text="Erabiltzaileak" styleClass="menuButton"/>
+                            <Button fx:id="btnList7" text="Platerak" styleClass="menuButton"/>
+                            <Button fx:id="btnList8" text="Finantzak" styleClass="menuButton"/>
+                        </children>
+                    </VBox>
+                </StackPane>
+            </children>
+        </AnchorPane>
+    </left>
 </BorderPane>
