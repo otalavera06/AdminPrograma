@@ -5,12 +5,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@Estiloak.css"
+<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../Estiloak.css"
             xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Kontroladoreak.menuKontrola">
 
     <top>
+        <!-- Barra superior -->
         <AnchorPane prefHeight="36.0" style="-fx-background-color: #E9C4C7;">
             <children>
                 <Label fx:id="Menu" layoutX="14.0" layoutY="4.0" text="MENUA" textFill="WHITE">
@@ -18,7 +19,7 @@
                     <graphic>
                         <ImageView fitHeight="28.0" fitWidth="31.0" preserveRatio="true">
                             <image>
-                                <Image url="@../../../irudiak/capas.png" />
+                                <Image url="@../../../../irudiak/capas.png" />
                             </image>
                         </ImageView>
                     </graphic>
@@ -47,6 +48,7 @@
     </top>
 
     <left>
+        <!-- Menú lateral -->
         <AnchorPane fx:id="slider" BorderPane.alignment="CENTER_LEFT">
             <children>
                 <StackPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
@@ -71,20 +73,7 @@
     </left>
 
     <center>
-        <VBox spacing="10" alignment="TOP_CENTER">
-            <HBox alignment="CENTER_RIGHT" spacing="10">
-                <Button fx:id="btnInsertLangilea" text="Insert Langilea" styleClass="menuButton"/>
-            </HBox>
-            <TableView fx:id="langileakTable" prefWidth="580.0" prefHeight="300.0">
-                <columns>
-                    <TableColumn fx:id="colIzena" text="Izena" prefWidth="100.0"/>
-                    <TableColumn fx:id="colAbizena" text="Abizena" prefWidth="100.0"/>
-                    <TableColumn fx:id="colEmaila" text="Emaila" prefWidth="150.0"/>
-                    <TableColumn fx:id="colTelefonoa" text="Telefonoa" prefWidth="100.0"/>
-                    <TableColumn fx:id="colBaimena" text="Baimena" prefWidth="80.0"/>
-                    <TableColumn fx:id="colAkzioak" text="Akzioak" prefWidth="120.0"/>
-                </columns>
-            </TableView>
-        </VBox>
+        <!-- Contenedor vacío donde se cargará Langileak.fxml -->
+        <StackPane fx:id="contentArea"/>
     </center>
 </BorderPane>

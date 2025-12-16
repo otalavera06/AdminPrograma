@@ -21,4 +21,86 @@
     -fx-font-size: 14px;
     -fx-alignment: CENTER;
 }
+/* Alternancia de filas */
+.table-row-cell:odd {
+    -fx-background-color: #FDE4E6; /* rosa claro */
+}
+.table-row-cell:even {
+    -fx-background-color: white;
+}
+.button.berria-button {
+    -fx-background-color: #666666; /* gris medio */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-padding: 5 15 5 15; /* espacio interno */
+    -fx-margin: 10;         /* margen externo */
+}
+
+/* Botones de acción en celdas */
+.button.edit-button {
+    -fx-background-color: #666666; /* gris medio */
+    -fx-text-fill: white;          /* texto blanco */
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.button.delete-button {
+    -fx-background-color: #D0021B; /* rojo */
+    -fx-text-fill: white;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+/* Espaciado interno en celdas con botones */
+.table-cell .graphic {
+    -fx-padding: 0 5 0 5;
+}
+/* Switch estilo móvil */
+.switch-toggle {
+    -fx-background-color: #ccc;
+    -fx-background-radius: 15;
+    -fx-padding: 0;
+    -fx-min-width: 40;
+    -fx-min-height: 20;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.switch-toggle .thumb {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-pref-width: 18;
+    -fx-pref-height: 18;
+    -fx-translate-x: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2,0,0,1);
+}
+
+/* Estado activado */
+.switch-toggle:selected {
+    -fx-background-color: #4A90E2; /* azul activado */
+    -fx-alignment: CENTER_RIGHT;
+}
+
+.switch-toggle:selected .thumb {
+    -fx-translate-x: 21; /* mueve el círculo a la derecha */
+}
+/* Estilo del texto de los encabezados */
+.table-view .column-header .label {
+    -fx-font-size: 18px;         /* más grande */
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-alignment: CENTER;
+}
+
+/* Fondo del encabezado */
+.table-view .column-header {
+    -fx-background-color: #B5424B; /* rojo vino */
+}
+
+/* Aumentar altura del encabezado */
+.table-view .column-header-background {
+    -fx-pref-height: 40px;       /* altura del área del encabezado */
+}
 

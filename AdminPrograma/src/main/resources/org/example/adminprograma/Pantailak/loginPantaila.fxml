@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane stylesheets="@Estiloak.css" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="900.0" style="-fx-background-color: White;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.adminprograma.Kontrola">
+<AnchorPane stylesheets="@../Estiloak.css" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="900.0" style="-fx-background-color: White;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.adminprograma.Kontrola">
    <children>
       <VBox fx:id="mainVbox" alignment="CENTER" layoutX="470.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="550.0" prefWidth="430.0" style="-fx-background-color: #B5424B;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="470.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -82,7 +82,7 @@
          <children>
             <ImageView fitHeight="547.0" fitWidth="470.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../irudiak/SushineliLogo.png" />
+                  <Image url="@../../../../irudiak/SushineliLogo.png" />
                </image>
             </ImageView>
          </children>

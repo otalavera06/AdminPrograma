@@ -11,7 +11,7 @@ import java.io.IOException;
 public class MenuPantaila {
     public void irekiMenua(){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/adminprograma/menuPantaila.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/adminprograma/Pantailak/menuPantaila.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.setTitle("Menua");
