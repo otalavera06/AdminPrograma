@@ -1,13 +1,13 @@
-package Klaseak;
+package Modeloak;
 
-public class Produktuak {
+public class Produktua {
     private int id;
     private String izena;
     private double prezioa;
     private int stock;
     private int produktuen_motak;
 
-    public Produktuak(int id, String izena, double prezioa, int stock, int produktuen_motak) {
+    public Produktua(int id, String izena, double prezioa, int stock, int produktuen_motak) {
         this.id = id;
         this.izena = izena;
         this.prezioa = prezioa;
