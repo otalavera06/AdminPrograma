@@ -1,5 +1,6 @@
 package Kontroladoreak;
 
+import DatuBaseak.MySql;
 import Modeloak.Langilea;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +19,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LangileaKontrola {
@@ -37,7 +40,15 @@ public class LangileaKontrola {
     @FXML
     private TableColumn<Langilea, Void> colAkzioak;
     @FXML
+    private TableColumn<Langilea, String> colErabiltzailea;
+    @FXML
+    private TableColumn<Langilea, String> colPasahitza;
+    @FXML
+    private TableColumn<Langilea, String> colLangileMotaId;
+    @FXML
     private Button btnInsertLangilea;
+
+
 
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
@@ -58,13 +69,21 @@ public class LangileaKontrola {
     /**
      * GET → cargar todos los langileak
      */
+    private final MySql db = new MySql();
+
     private void kargatuLangileak() {
         colIzena.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getIzena()));
         colAbizena.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAbizena()));
         colEmaila.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEmail()));
         colTelefonoa.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTelefonoa()));
+        colErabiltzailea.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getErabiltzailea()));
+        colPasahitza.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPasahitza()));
+        colLangileMotaId.setCellValueFactory(data -> new SimpleStringProperty(
+                String.valueOf(data.getValue().getLangileMotaId())
+        ));
         colBaimena.setCellValueFactory(data -> new SimpleBooleanProperty(data.getValue().isBaimena()));
 
+        // Toggle para baimena
         colBaimena.setCellFactory(col -> new TableCell<Langilea, Boolean>() {
             private final ToggleButton toggle = new ToggleButton();
             private final Region thumb = new Region();
@@ -74,11 +93,14 @@ public class LangileaKontrola {
                 thumb.getStyleClass().add("thumb");
                 toggle.setGraphic(thumb);
 
+                // Acción al pulsar
                 toggle.setOnAction(e -> {
                     Langilea l = getTableView().getItems().get(getIndex());
                     boolean nuevoEstado = toggle.isSelected();
                     l.setBaimena(nuevoEstado);
-                    updateLangilea(l);
+
+                    // Actualiza en BD
+                    updateLangileaBaimena(l);
                 });
             }
 
@@ -94,68 +116,48 @@ public class LangileaKontrola {
             }
         });
 
-        // 👇 Aquí está la implementación estilizada de colAkzioak
-        colAkzioak.setCellFactory(col -> new TableCell<>() {
-            private final Button btnUpdate = new Button("✎");   // icono lápiz
-            private final Button btnDelete = new Button("✖");   // icono cruz
-            private final HBox box = new HBox(5, btnUpdate, btnDelete);
+        // SELECT desde MySQL
+        List<Langilea> lista = new ArrayList<>();
+        try (Connection conn = db.konektatu();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT id, izena, abizena, erabiltzailea, pasahitza, baimena, email, telefonoa, langile_mota_id FROM langileak")) {
 
-            {
-                // aplicar estilos CSS definidos en Estiloak.css
-                btnUpdate.getStyleClass().add("edit-button");
-                btnDelete.getStyleClass().add("delete-button");
-
-                btnUpdate.setOnAction(e -> {
-                    Langilea l = getTableView().getItems().get(getIndex());
-                    updateLangilea(l);
-                });
-                btnDelete.setOnAction(e -> {
-                    Langilea l = getTableView().getItems().get(getIndex());
-                    deleteLangilea(l.getId());
-                });
+            while (rs.next()) {
+                Langilea l = new Langilea();
+                l.setId(rs.getInt("id"));
+                l.setIzena(rs.getString("izena"));
+                l.setAbizena(rs.getString("abizena"));
+                l.setErabiltzailea(rs.getString("erabiltzailea"));
+                l.setPasahitza(rs.getString("pasahitza"));
+                l.setBaimena(rs.getBoolean("baimena"));
+                l.setEmail(rs.getString("email"));
+                l.setTelefonoa(rs.getString("telefonoa"));
+                l.setLangileMotaId(rs.getInt("langile_mota_id"));
+                lista.add(l);
             }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : box);
-            }
-        });
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.miapp.com/langileak"))
-                .GET()
-                .build();
-
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(json -> {
-                    try {
-                        List<Langilea> langileak = mapper.readValue(json, new TypeReference<List<Langilea>>() {
-                        });
-                        Platform.runLater(() -> langileakTable.getItems().setAll(langileak));
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                });
+            Platform.runLater(() -> langileakTable.getItems().setAll(lista));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
 
     /**
      * PUT → actualizar un langilea
      */
-    private void updateLangilea(Langilea l) {
-        try {
-            String json = mapper.writeValueAsString(l);
+    private void updateLangileaBaimena(Langilea l) {
+        String sql = "UPDATE langileak SET baimena=? WHERE id=?";
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.miapp.com/langileak/" + l.getId()))
-                    .PUT(HttpRequest.BodyPublishers.ofString(json))
-                    .header("Content-Type", "application/json")
-                    .build();
+        try (Connection conn = db.konektatu();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(resp -> System.out.println("Update OK: " + resp.body()));
-        } catch (Exception e) {
+            ps.setBoolean(1, l.isBaimena());
+            ps.setInt(2, l.getId());
+
+            ps.executeUpdate();
+            System.out.println("Baimena aktualizatua: " + l.getIzena() + " → " + (l.isBaimena() ? "ON" : "OFF"));
+
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -262,5 +264,13 @@ public class LangileaKontrola {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public TableColumn<Langilea, Void> getColAkzioak() {
+        return colAkzioak;
+    }
+
+    public void setColAkzioak(TableColumn<Langilea, Void> colAkzioak) {
+        this.colAkzioak = colAkzioak;
     }
 }
