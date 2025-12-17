@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Kontroladoreak.LangileaKontrola">
+
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+            <!-- Botón Insert arriba a la derecha -->
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button fx:id="btnInsertLangilea" styleClass="menuButton" text="Berria" />
+            </HBox>
+
+            <!-- Tabla de Langileak -->
+            <TableView fx:id="langileakTable" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colIzena" text="Izena" />
+                    <TableColumn fx:id="colAbizena" text="Abizena" />
+                    <TableColumn fx:id="colEmaila" text="Emaila" />
+                    <TableColumn fx:id="colTelefonoa" text="Telefonoa" />
+                    <TableColumn fx:id="colBaimena" text="Baimena" />
+                    <TableColumn fx:id="colAkzioak" text="Akzioak" />
+                </columns>
+            </TableView>
+        </VBox>
+    </children>
+</AnchorPane>

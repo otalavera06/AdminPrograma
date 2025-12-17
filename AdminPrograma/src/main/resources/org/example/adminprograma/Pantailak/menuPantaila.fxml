@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane fx:id="root"
+            prefHeight="400.0"
+            prefWidth="600.0"
+            stylesheets="@../Estiloak.css"
+            xmlns="http://javafx.com/javafx/17.0.12"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="Kontroladoreak.menuKontrola">
+
+    <!-- Barra superior -->
+    <top>
+        <AnchorPane prefHeight="36.0" style="-fx-background-color: #E9C4C7;">
+            <children>
+
+                <HBox alignment="CENTER_RIGHT" spacing="5.0"
+                      AnchorPane.bottomAnchor="0.0"
+                      AnchorPane.rightAnchor="0.0"
+                      AnchorPane.topAnchor="0.0">
+                    <children>
+                        <Button fx:id="btnSaioaBukatu"
+                                onAction="#saioaBukatu"
+                                style="-fx-background-color: transparent;"
+                                text="Saioa itxi"
+                                textFill="WHITE"/>
+
+                        <Button fx:id="btnMinimizatu"
+                                onAction="#lehioaJaitsi"
+                                style="-fx-background-color: transparent;"
+                                text="_"
+                                textFill="WHITE"/>
+
+                        <Button fx:id="btnItxi"
+                                style="-fx-background-color: transparent;"
+                                text="X"
+                                textFill="WHITE"/>
+                    </children>
+                </HBox>
+
+            </children>
+        </AnchorPane>
+    </top>
+
+    <!-- Menú lateral fijo -->
+    <left>
+        <AnchorPane fx:id="slider" BorderPane.alignment="CENTER_LEFT">
+            <children>
+                <StackPane AnchorPane.topAnchor="0.0"
+                           AnchorPane.bottomAnchor="0.0"
+                           AnchorPane.leftAnchor="0.0"
+                           AnchorPane.rightAnchor="0.0">
+
+                    <VBox fx:id="menuVBox"
+                          alignment="CENTER"
+                          spacing="10"
+                          styleClass="menuBox">
+
+                        <children>
+                            <Button fx:id="btnList1" text="Produktuak" styleClass="menuButton"/>
+                            <Button fx:id="btnList2" text="Langileak" styleClass="menuButton"/>
+                            <Button fx:id="btnList3" text="Erreserbak" styleClass="menuButton"/>
+                            <Button fx:id="btnList4" text="Eskaerak" styleClass="menuButton"/>
+                            <Button fx:id="btnList5" text="Fakturak" styleClass="menuButton"/>
+                            <Button fx:id="btnList6" text="Erabiltzaileak" styleClass="menuButton"/>
+                            <Button fx:id="btnList7" text="Platerak" styleClass="menuButton"/>
+                            <Button fx:id="btnList8" text="Finantzak" styleClass="menuButton"/>
+                        </children>
+
+                    </VBox>
+                </StackPane>
+            </children>
+        </AnchorPane>
+    </left>
+
+    <!-- Área central -->
+    <center>
+        <StackPane fx:id="contentArea"/>
+    </center>
+
+</BorderPane>

@@ -12,7 +12,7 @@ import java.io.IOException;
 public class LoginPantaila {
     public void irekiLogina(){
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/adminprograma/loginPantaila.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/adminprograma/Pantailak/loginPantaila.fxml"));
             Parent root = fxmlLoader.load();
             Stage stage = new Stage();
             stage.setTitle("Saioa hasi");
