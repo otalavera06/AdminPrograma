@@ -5,57 +5,61 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../Estiloak.css"
+<BorderPane fx:id="root"
+            prefHeight="400.0"
+            prefWidth="600.0"
+            stylesheets="@../Estiloak.css"
             xmlns="http://javafx.com/javafx/17.0.12"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="Kontroladoreak.menuKontrola">
 
+    <!-- Barra superior -->
     <top>
-        <!-- Barra superior -->
         <AnchorPane prefHeight="36.0" style="-fx-background-color: #E9C4C7;">
             <children>
-                <Label fx:id="Menu" layoutX="14.0" layoutY="4.0" text="MENUA" textFill="WHITE">
-                    <font><Font name="Verdana Bold" size="14.0" /></font>
-                    <graphic>
-                        <ImageView fitHeight="28.0" fitWidth="31.0" preserveRatio="true">
-                            <image>
-                                <Image url="@../../../../irudiak/capas.png" />
-                            </image>
-                        </ImageView>
-                    </graphic>
-                </Label>
-                <Label fx:id="MenuBack" layoutX="45.0" layoutY="9.0" text="MENUA" textFill="WHITE">
-                    <font><Font name="Verdana Bold" size="14.0" /></font>
-                </Label>
+
                 <HBox alignment="CENTER_RIGHT" spacing="5.0"
                       AnchorPane.bottomAnchor="0.0"
                       AnchorPane.rightAnchor="0.0"
                       AnchorPane.topAnchor="0.0">
                     <children>
-                        <Button fx:id="btnSaioaBukatu" onAction="#saioaBukatu"
+                        <Button fx:id="btnSaioaBukatu"
+                                onAction="#saioaBukatu"
                                 style="-fx-background-color: transparent;"
-                                text="Saioa itxi" textFill="WHITE"/>
-                        <Button fx:id="btnMinimizatu" onAction="#lehioaJaitsi"
+                                text="Saioa itxi"
+                                textFill="WHITE"/>
+
+                        <Button fx:id="btnMinimizatu"
+                                onAction="#lehioaJaitsi"
                                 style="-fx-background-color: transparent;"
-                                text="_" textFill="WHITE"/>
+                                text="_"
+                                textFill="WHITE"/>
+
                         <Button fx:id="btnItxi"
                                 style="-fx-background-color: transparent;"
-                                text="X" textFill="WHITE"/>
+                                text="X"
+                                textFill="WHITE"/>
                     </children>
                 </HBox>
+
             </children>
         </AnchorPane>
     </top>
 
+    <!-- Menú lateral fijo -->
     <left>
-        <!-- Menú lateral -->
         <AnchorPane fx:id="slider" BorderPane.alignment="CENTER_LEFT">
             <children>
-                <StackPane AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
-                           AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                    <VBox fx:id="menuVBox" styleClass="menuBox"
+                <StackPane AnchorPane.topAnchor="0.0"
+                           AnchorPane.bottomAnchor="0.0"
+                           AnchorPane.leftAnchor="0.0"
+                           AnchorPane.rightAnchor="0.0">
+
+                    <VBox fx:id="menuVBox"
                           alignment="CENTER"
-                          spacing="10">
+                          spacing="10"
+                          styleClass="menuBox">
+
                         <children>
                             <Button fx:id="btnList1" text="Produktuak" styleClass="menuButton"/>
                             <Button fx:id="btnList2" text="Langileak" styleClass="menuButton"/>
@@ -66,14 +70,16 @@
                             <Button fx:id="btnList7" text="Platerak" styleClass="menuButton"/>
                             <Button fx:id="btnList8" text="Finantzak" styleClass="menuButton"/>
                         </children>
+
                     </VBox>
                 </StackPane>
             </children>
         </AnchorPane>
     </left>
 
+    <!-- Área central -->
     <center>
-        <!-- Contenedor vacío donde se cargará Langileak.fxml -->
         <StackPane fx:id="contentArea"/>
     </center>
+
 </BorderPane>

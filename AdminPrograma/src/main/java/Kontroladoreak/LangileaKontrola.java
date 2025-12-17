@@ -180,10 +180,10 @@ public class LangileaKontrola {
      */
     private void mostrarDialogoInsert() {
         Dialog<Langilea> dialog = new Dialog<>();
-        dialog.setTitle("Insertar Langilea");
-        dialog.setHeaderText("Introduce los datos del nuevo langilea");
+        dialog.setTitle("Langilea sartu");
+        dialog.setHeaderText("Sartu langilearen informazioa:");
 
-        ButtonType insertButtonType = new ButtonType("Insertar", ButtonBar.ButtonData.OK_DONE);
+        ButtonType insertButtonType = new ButtonType("Sartu", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(insertButtonType, ButtonType.CANCEL);
 
         GridPane grid = new GridPane();

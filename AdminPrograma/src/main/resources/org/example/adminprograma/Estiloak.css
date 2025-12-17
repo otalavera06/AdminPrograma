@@ -92,6 +92,8 @@
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-alignment: CENTER;
+    -fx-font-family: "Verdana Bold";
+
 }
 
 /* Fondo del encabezado */
