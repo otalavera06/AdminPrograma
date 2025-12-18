@@ -20,7 +20,6 @@
                     <TableColumn fx:id="colAbizena" text="Abizena" />
                     <TableColumn fx:id="colErabiltzailea" text="Erabiltzailea" />
                     <TableColumn fx:id="colPasahitza" text="Pasahitza" />
-                    <TableColumn fx:id="colLangileMotaId" text="Langile Mota" />
                     <TableColumn fx:id="colEmaila" text="Emaila" />
                     <TableColumn fx:id="colTelefonoa" text="Telefonoa" />
                     <TableColumn fx:id="colBaimena" text="Baimena" />
