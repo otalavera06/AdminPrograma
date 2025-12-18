@@ -43,8 +43,7 @@ public class LangileaKontrola {
     private TableColumn<Langilea, String> colErabiltzailea;
     @FXML
     private TableColumn<Langilea, String> colPasahitza;
-    @FXML
-    private TableColumn<Langilea, String> colLangileMotaId;
+
     @FXML
     private Button btnInsertLangilea;
 
@@ -78,9 +77,6 @@ public class LangileaKontrola {
         colTelefonoa.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getTelefonoa()));
         colErabiltzailea.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getErabiltzailea()));
         colPasahitza.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPasahitza()));
-        colLangileMotaId.setCellValueFactory(data -> new SimpleStringProperty(
-                String.valueOf(data.getValue().getLangileMotaId())
-        ));
         colBaimena.setCellValueFactory(data -> new SimpleBooleanProperty(data.getValue().isBaimena()));
 
         // Toggle para baimena
@@ -120,7 +116,7 @@ public class LangileaKontrola {
         List<Langilea> lista = new ArrayList<>();
         try (Connection conn = db.konektatu();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id, izena, abizena, erabiltzailea, pasahitza, baimena, email, telefonoa, langile_mota_id FROM langileak")) {
+             ResultSet rs = stmt.executeQuery("SELECT id, izena, abizena, erabiltzailea, pasahitza, baimena, email, telefonoa FROM langileak")) {
 
             while (rs.next()) {
                 Langilea l = new Langilea();
@@ -132,7 +128,6 @@ public class LangileaKontrola {
                 l.setBaimena(rs.getBoolean("baimena"));
                 l.setEmail(rs.getString("email"));
                 l.setTelefonoa(rs.getString("telefonoa"));
-                l.setLangileMotaId(rs.getInt("langile_mota_id"));
                 lista.add(l);
             }
             Platform.runLater(() -> langileakTable.getItems().setAll(lista));
