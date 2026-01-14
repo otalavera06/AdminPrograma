@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3d62db59-75e5-4c8d-b012-b4a670077adf" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/AdminPrograma/src/main/java/Kontroladoreak/LoginKontrola.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdminPrograma/src/main/java/DatuBaseak/Erabiltzailea.java" beforeDir="false" afterPath="$PROJECT_DIR$/AdminPrograma/src/main/java/DatuBaseak/Erabiltzailea.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdminPrograma/src/main/java/Kontroladoreak/LangileaKontrola.java" beforeDir="false" afterPath="$PROJECT_DIR$/AdminPrograma/src/main/java/Kontroladoreak/LangileaKontrola.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdminPrograma/src/main/java/Modeloak/Langilea.java" beforeDir="false" afterPath="$PROJECT_DIR$/AdminPrograma/src/main/java/Modeloak/Langilea.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdminPrograma/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/AdminPrograma/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdminPrograma/src/main/java/org/example/adminprograma/Aplikazioa.java" beforeDir="false" afterPath="$PROJECT_DIR$/AdminPrograma/src/main/java/org/example/adminprograma/Aplikazioa.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdminPrograma/src/main/java/org/example/adminprograma/erabiltzaileKontrola.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdminPrograma/src/main/resources/org/example/adminprograma/Pantailak/loginPantaila.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/AdminPrograma/src/main/resources/org/example/adminprograma/Pantailak/loginPantaila.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AdminPrograma/src/main/resources/org/example/adminprograma/menuPantaila.fxml" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ComposerSettings">
+    <execution />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="371HTt99tf1HpMBd13P5QDDYJzq" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Aplikazioa.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Alex__L&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.26199.169" />
+        <option value="bundled-js-predefined-d6986cc7102b-9c94529fcfe0-JavaScript-IU-252.26199.169" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3d62db59-75e5-4c8d-b012-b4a670077adf" name="Changes" comment="" />
+      <created>1766063669141</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1766063669141</updated>
+      <workItem from="1766063670953" duration="9381000" />
+      <workItem from="1766326010811" duration="3460000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
