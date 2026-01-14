@@ -57,7 +57,7 @@ public class LangileaKontrola {
         btnInsertLangilea.setText("Berria");
         btnInsertLangilea.getStyleClass().add("berria-button");
 
-        // margen externo de 10px alrededor del botón
+
         HBox.setMargin(btnInsertLangilea, new Insets(10, 10, 0, 10));
 
         btnInsertLangilea.setOnAction(e -> mostrarDialogoInsert());
