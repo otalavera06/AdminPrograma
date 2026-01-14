@@ -29,9 +29,6 @@ public class Langilea {
     public boolean isBaimena() { return baimena; }
     public void setBaimena(boolean baimena) { this.baimena = baimena; }
 
-    public int getLangileMotaId() { return langileMotaId; }
-    public void setLangileMotaId(int langileMotaId) { this.langileMotaId = langileMotaId; }
-
     public String getErabiltzailea() { return erabiltzailea; }
     public void setErabiltzailea(String erabiltzailea) { this.erabiltzailea = erabiltzailea; }
 
