@@ -84,13 +84,13 @@ public class LangileaKontrola {
         colPasahitza.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPasahitza()));
         colBaimena.setCellValueFactory(data -> new SimpleBooleanProperty(data.getValue().isBaimena()));
 
-        // 🔀 BAIMENA TOGGLE-A (switch modua, zure CSS-ko .switch-toggle erabilita)
+        //  BAIMENA TOGGLE-A (switch modua, zure CSS-ko .switch-toggle erabilita)
         colBaimena.setCellFactory(col -> new TableCell<Langilea, Boolean>() {
             private final ToggleButton toggle = new ToggleButton();
             private final Region thumb = new Region();
 
             {
-                // 🔴 GARRANTZITSUA: hemen .switch-toggle klasea erabiltzen dugu, Estiloak.css-ekoarekin berdin-berdin
+                //  GARRANTZITSUA: hemen .switch-toggle klasea erabiltzen dugu, Estiloak.css-ekoarekin berdin-berdin
                 toggle.getStyleClass().add("switch-toggle"); // antes era "toggle-switch"
                 thumb.getStyleClass().add("thumb");
                 toggle.setGraphic(thumb);
@@ -115,7 +115,7 @@ public class LangileaKontrola {
             }
         });
 
-        // ✏️ / ❌ botoiak (editatu / ezabatu)
+        //botoiak (editatu / ezabatu)
         colAkzioak.setCellFactory(col -> new TableCell<>() {
             private final Button btnUpdate = new Button("✎");
             private final Button btnDelete = new Button("✖");
