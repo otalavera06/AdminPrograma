@@ -1,8 +1,9 @@
 package Kontroladoreak;
 
-import DatuBaseak.MySql;
 import Modeloak.Langilea;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -19,14 +20,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LangileaKontrola {
 
     @FXML
     private TableView<Langilea> langileakTable;
+
     @FXML
     private TableColumn<Langilea, String> colIzena;
     @FXML
@@ -36,41 +36,46 @@ public class LangileaKontrola {
     @FXML
     private TableColumn<Langilea, String> colTelefonoa;
     @FXML
-    private TableColumn<Langilea, Boolean> colBaimena;
-    @FXML
-    private TableColumn<Langilea, Void> colAkzioak;
-    @FXML
     private TableColumn<Langilea, String> colErabiltzailea;
     @FXML
     private TableColumn<Langilea, String> colPasahitza;
+    @FXML
+    private TableColumn<Langilea, Boolean> colBaimena;
+    @FXML
+    private TableColumn<Langilea, Void> colAkzioak;
 
     @FXML
     private Button btnInsertLangilea;
 
-
+    // C# API1 aplikazioaren oinarrizko URLa
+    private static final String API_BASE_URL = "http://localhost:5005/api";
 
     private final HttpClient client = HttpClient.newHttpClient();
-    private final ObjectMapper mapper = new ObjectMapper();
+
+    // JSON parserra:
+    //  - FAIL_ON_UNKNOWN_PROPERTIES = false  → APIk bidaltzen duen gehiegizko informazioa ez du molestatuko
+    //  - ACCEPT_CASE_INSENSITIVE_PROPERTIES = true → propietateen izenekin malgua
+    private final ObjectMapper mapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
 
     @FXML
     public void initialize() {
         btnInsertLangilea.setText("Berria");
         btnInsertLangilea.getStyleClass().add("berria-button");
-
-
         HBox.setMargin(btnInsertLangilea, new Insets(10, 10, 0, 10));
 
         btnInsertLangilea.setOnAction(e -> mostrarDialogoInsert());
         langileakTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
         kargatuLangileak();
     }
 
     /**
-     * GET → cargar todos los langileak
+     * GET → langile guztiak API-tik kargatu.
      */
-    private final MySql db = new MySql();
-
     private void kargatuLangileak() {
+        // Zutabeen datu-iturria
         colIzena.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getIzena()));
         colAbizena.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAbizena()));
         colEmaila.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getEmail()));
@@ -79,24 +84,22 @@ public class LangileaKontrola {
         colPasahitza.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPasahitza()));
         colBaimena.setCellValueFactory(data -> new SimpleBooleanProperty(data.getValue().isBaimena()));
 
-        // Toggle para baimena
+        //  BAIMENA TOGGLE-A (switch modua, zure CSS-ko .switch-toggle erabilita)
         colBaimena.setCellFactory(col -> new TableCell<Langilea, Boolean>() {
             private final ToggleButton toggle = new ToggleButton();
             private final Region thumb = new Region();
 
             {
-                toggle.getStyleClass().add("switch-toggle");
+                //  GARRANTZITSUA: hemen .switch-toggle klasea erabiltzen dugu, Estiloak.css-ekoarekin berdin-berdin
+                toggle.getStyleClass().add("switch-toggle"); // antes era "toggle-switch"
                 thumb.getStyleClass().add("thumb");
                 toggle.setGraphic(thumb);
 
-                // Acción al pulsar
                 toggle.setOnAction(e -> {
                     Langilea l = getTableView().getItems().get(getIndex());
-                    boolean nuevoEstado = toggle.isSelected();
-                    l.setBaimena(nuevoEstado);
-
-                    // Actualiza en BD
-                    updateLangileaBaimena(l);
+                    boolean egoeraBerria = toggle.isSelected();
+                    l.setBaimena(egoeraBerria);   // boolean aldatzen dugu
+                    updateLangilea(l);            // eta API-ra bidali (PUT)
                 });
             }
 
@@ -112,57 +115,88 @@ public class LangileaKontrola {
             }
         });
 
-        // SELECT desde MySQL
-        List<Langilea> lista = new ArrayList<>();
-        try (Connection conn = db.konektatu();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id, izena, abizena, erabiltzailea, pasahitza, baimena, email, telefonoa FROM langileak")) {
+        //botoiak (editatu / ezabatu)
+        colAkzioak.setCellFactory(col -> new TableCell<>() {
+            private final Button btnUpdate = new Button("✎");
+            private final Button btnDelete = new Button("✖");
+            private final HBox box = new HBox(5, btnUpdate, btnDelete);
 
-            while (rs.next()) {
-                Langilea l = new Langilea();
-                l.setId(rs.getInt("id"));
-                l.setIzena(rs.getString("izena"));
-                l.setAbizena(rs.getString("abizena"));
-                l.setErabiltzailea(rs.getString("erabiltzailea"));
-                l.setPasahitza(rs.getString("pasahitza"));
-                l.setBaimena(rs.getBoolean("baimena"));
-                l.setEmail(rs.getString("email"));
-                l.setTelefonoa(rs.getString("telefonoa"));
-                lista.add(l);
+            {
+                btnUpdate.getStyleClass().add("edit-button");
+                btnDelete.getStyleClass().add("delete-button");
+                box.getStyleClass().add("actions-cell");
+
+                btnUpdate.setOnAction(e -> {
+                    Langilea langilea = getTableView().getItems().get(getIndex());
+                    mostrarDialogoUpdate(langilea);
+                });
+
+                btnDelete.setOnAction(e -> {
+                    Langilea langilea = getTableView().getItems().get(getIndex());
+                    deleteLangilea(langilea.getId());
+                });
             }
-            Platform.runLater(() -> langileakTable.getItems().setAll(lista));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(box);
+                }
+            }
+        });
+
+        // API → GET api/Langilea
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(API_BASE_URL + "/Langilea"))
+                .GET()
+                .build();
+
+        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(HttpResponse::body)
+                .thenAccept(json -> {
+                    try {
+                        List<Langilea> langileak = mapper.readValue(
+                                json,
+                                new TypeReference<List<Langilea>>() {}
+                        );
+                        Platform.runLater(() -> langileakTable.getItems().setAll(langileak));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
-
     /**
-     * PUT → actualizar un langilea
+     * PUT → langilea eguneratu (baimena edo beste eremuak).
      */
-    private void updateLangileaBaimena(Langilea l) {
-        String sql = "UPDATE langileak SET baimena=? WHERE id=?";
+    private void updateLangilea(Langilea l) {
+        try {
+            String json = buildLangileaJson(l);
 
-        try (Connection conn = db.konektatu();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(API_BASE_URL + "/Langilea/" + l.getId()))
+                    .PUT(HttpRequest.BodyPublishers.ofString(json))
+                    .header("Content-Type", "application/json")
+                    .build();
 
-            ps.setBoolean(1, l.isBaimena());
-            ps.setInt(2, l.getId());
-
-            ps.executeUpdate();
-            System.out.println("Baimena aktualizatua: " + l.getIzena() + " → " + (l.isBaimena() ? "ON" : "OFF"));
-
-        } catch (SQLException e) {
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenAccept(resp ->
+                            System.out.println("Update OK (" + l.getId() + "): " + resp.statusCode())
+                    );
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * DELETE → eliminar un langilea
+     * DELETE → langilea ezabatu.
      */
     private void deleteLangilea(int id) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.miapp.com/langileak/" + id))
+                .uri(URI.create(API_BASE_URL + "/Langilea/" + id))
                 .DELETE()
                 .build();
 
@@ -173,7 +207,7 @@ public class LangileaKontrola {
     }
 
     /**
-     * Mostrar ventana de inserción
+     * INSERT → langile berria sortzeko dialogoa.
      */
     private void mostrarDialogoInsert() {
         Dialog<Langilea> dialog = new Dialog<>();
@@ -186,51 +220,44 @@ public class LangileaKontrola {
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
 
         TextField tfIzena = new TextField();
         TextField tfAbizena = new TextField();
-        TextField tfEmail = new TextField();
+        TextField tfEmaila = new TextField();
         TextField tfTelefonoa = new TextField();
         TextField tfErabiltzailea = new TextField();
         PasswordField tfPasahitza = new PasswordField();
-        ToggleButton toggleBaimena = new ToggleButton();
-        toggleBaimena.setSelected(false);
-        toggleBaimena.getStyleClass().add("switch-toggle");
-        Region thumb = new Region();
-        thumb.getStyleClass().add("thumb");
-        toggleBaimena.setGraphic(thumb);
+        ToggleButton toggleBaimena = new ToggleButton("Baimena");
 
-
-
-        grid.add(new Label("Izena:"), 0, 0);
-        grid.add(tfIzena, 1, 0);
-        grid.add(new Label("Abizena:"), 0, 1);
-        grid.add(tfAbizena, 1, 1);
-        grid.add(new Label("Email:"), 0, 2);
-        grid.add(tfEmail, 1, 2);
-        grid.add(new Label("Telefonoa:"), 0, 3);
-        grid.add(tfTelefonoa, 1, 3);
-        grid.add(new Label("Erabiltzailea:"), 0, 4);
-        grid.add(tfErabiltzailea, 1, 4);
-        grid.add(new Label("Pasahitza:"), 0, 5);
-        grid.add(tfPasahitza, 1, 5);
-        grid.add(new Label("Baimena:"), 0, 6);
-        grid.add(toggleBaimena, 1, 6);
+        grid.add(new Label("Izena:"),        0, 0);
+        grid.add(tfIzena,                    1, 0);
+        grid.add(new Label("Abizena:"),      0, 1);
+        grid.add(tfAbizena,                  1, 1);
+        grid.add(new Label("Emaila:"),       0, 2);
+        grid.add(tfEmaila,                   1, 2);
+        grid.add(new Label("Telefonoa:"),    0, 3);
+        grid.add(tfTelefonoa,                1, 3);
+        grid.add(new Label("Erabiltzailea:"),0, 4);
+        grid.add(tfErabiltzailea,            1, 4);
+        grid.add(new Label("Pasahitza:"),    0, 5);
+        grid.add(tfPasahitza,                1, 5);
+        grid.add(new Label("Baimena:"),      0, 6);
+        grid.add(toggleBaimena,              1, 6);
 
         dialog.getDialogPane().setContent(grid);
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == insertButtonType) {
-                Langilea nuevo = new Langilea();
-                nuevo.setIzena(tfIzena.getText());
-                nuevo.setAbizena(tfAbizena.getText());
-                nuevo.setEmail(tfEmail.getText());
-                nuevo.setTelefonoa(tfTelefonoa.getText());
-                nuevo.setErabiltzailea(tfErabiltzailea.getText());
-                nuevo.setPasahitza(tfPasahitza.getText());
-                nuevo.setBaimena(toggleBaimena.isSelected());
-                nuevo.setLangileMotaId(1); // puedes cambiarlo según tu lógica
-                return nuevo;
+                Langilea l = new Langilea();
+                l.setIzena(tfIzena.getText());
+                l.setAbizena(tfAbizena.getText());
+                l.setEmail(tfEmaila.getText());
+                l.setTelefonoa(tfTelefonoa.getText());
+                l.setErabiltzailea(tfErabiltzailea.getText());
+                l.setPasahitza(tfPasahitza.getText());
+                l.setBaimena(toggleBaimena.isSelected());
+                return l;
             }
             return null;
         });
@@ -239,33 +266,117 @@ public class LangileaKontrola {
     }
 
     /**
-     * POST → insertar un nuevo langilea
+     * UPDATE → lehendik dagoen langilea editatzeko dialogoa.
      */
-    private void insertLangilea(Langilea nuevo) {
+    private void mostrarDialogoUpdate(Langilea langilea) {
+        Dialog<Langilea> dialog = new Dialog<>();
+        dialog.setTitle("Langilea eguneratu");
+        dialog.setHeaderText("Aldatu langilearen datuak:");
+
+        ButtonType updateButtonType = new ButtonType("Gorde", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        TextField tfIzena = new TextField(langilea.getIzena());
+        TextField tfAbizena = new TextField(langilea.getAbizena());
+        TextField tfEmaila = new TextField(langilea.getEmail());
+        TextField tfTelefonoa = new TextField(langilea.getTelefonoa());
+        TextField tfErabiltzailea = new TextField(langilea.getErabiltzailea());
+        PasswordField tfPasahitza = new PasswordField();
+        tfPasahitza.setText(langilea.getPasahitza());
+        ToggleButton toggleBaimena = new ToggleButton("Baimena");
+        toggleBaimena.setSelected(langilea.isBaimena());
+
+        grid.add(new Label("Izena:"),        0, 0);
+        grid.add(tfIzena,                    1, 0);
+        grid.add(new Label("Abizena:"),      0, 1);
+        grid.add(tfAbizena,                  1, 1);
+        grid.add(new Label("Emaila:"),       0, 2);
+        grid.add(tfEmaila,                   1, 2);
+        grid.add(new Label("Telefonoa:"),    0, 3);
+        grid.add(tfTelefonoa,                1, 3);
+        grid.add(new Label("Erabiltzailea:"),0, 4);
+        grid.add(tfErabiltzailea,            1, 4);
+        grid.add(new Label("Pasahitza:"),    0, 5);
+        grid.add(tfPasahitza,                1, 5);
+        grid.add(new Label("Baimena:"),      0, 6);
+        grid.add(toggleBaimena,              1, 6);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == updateButtonType) {
+                langilea.setIzena(tfIzena.getText());
+                langilea.setAbizena(tfAbizena.getText());
+                langilea.setEmail(tfEmaila.getText());
+                langilea.setTelefonoa(tfTelefonoa.getText());
+                langilea.setErabiltzailea(tfErabiltzailea.getText());
+                langilea.setPasahitza(tfPasahitza.getText());
+                langilea.setBaimena(toggleBaimena.isSelected());
+                return langilea;
+            }
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(this::updateLangilea);
+    }
+
+    /**
+     * POST → langile berria API-n sortu.
+     */
+    private void insertLangilea(Langilea l) {
         try {
-            String json = mapper.writeValueAsString(nuevo);
+            String json = buildLangileaJson(l);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://api.miapp.com/langileak"))
+                    .uri(URI.create(API_BASE_URL + "/Langilea"))
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .header("Content-Type", "application/json")
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(resp -> {
-                        System.out.println("Insert OK: " + resp.body());
-                        kargatuLangileak(); // refrescar tabla
+                        System.out.println("Insert OK: " + resp.statusCode());
+                        kargatuLangileak();   // taula berriz kargatu
                     });
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public TableColumn<Langilea, Void> getColAkzioak() {
-        return colAkzioak;
+    /**
+     * Java objektua → APIk ulertzen duen JSON-a.
+     * Baimena boolean (true/false) → 1/0 bihurtzen dugu.
+     */
+    private String buildLangileaJson(Langilea l) {
+        int baimenaInt = l.isBaimena() ? 1 : 0;
+
+        return String.format(
+                "{" +
+                        "\"Izena\":\"%s\"," +
+                        "\"Abizena\":\"%s\"," +
+                        "\"Email\":\"%s\"," +
+                        "\"Telefonoa\":\"%s\"," +
+                        "\"Baimena\":%d," +
+                        "\"Erabiltzailea\":\"%s\"," +
+                        "\"Pasahitza\":\"%s\"" +
+                        "}",
+                escape(l.getIzena()),
+                escape(l.getAbizena()),
+                escape(l.getEmail()),
+                escape(l.getTelefonoa()),
+                baimenaInt,
+                escape(l.getErabiltzailea()),
+                escape(l.getPasahitza())
+        );
     }
 
-    public void setColAkzioak(TableColumn<Langilea, Void> colAkzioak) {
-        this.colAkzioak = colAkzioak;
+    private String escape(String value) {
+        if (value == null) return "";
+        return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 }
