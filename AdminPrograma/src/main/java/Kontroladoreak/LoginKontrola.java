@@ -1,6 +1,6 @@
 package Kontroladoreak;
 
-import DatuBaseak.Erabiltzailea;
+import DatuBaseak.LoginZerbitzua;
 import Pantailak.MenuPantaila;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,7 +25,7 @@ public class LoginKontrola {
     @FXML
     private Button btnLogin;              // fx:id="btnLogin"
 
-    private final Erabiltzailea loginService = new Erabiltzailea();
+    private final LoginZerbitzua loginService = new LoginZerbitzua();
 
     @FXML
     public void initialize() {

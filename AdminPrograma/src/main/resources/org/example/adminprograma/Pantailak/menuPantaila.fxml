@@ -39,6 +39,7 @@
                             <Button fx:id="btnList6" styleClass="menuButton" text="Erabiltzaileak" />
                             <Button fx:id="btnList3" styleClass="menuButton" text="Erreserbak" />
                             <Button fx:id="btnList5" styleClass="menuButton" text="Fakturak" />
+                            <Button fx:id="btnList8" styleClass="menuButton" text="Stock" />
                         </children>
 
                     </VBox>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Kontroladoreak.PlateraKontrola">
+
+    <children>
+        <VBox alignment="TOP_CENTER" spacing="10" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+            <!-- Botón Insert arriba a la derecha -->
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button fx:id="btnInsert" styleClass="menuButton" text="Berria" />
+            </HBox>
+
+            <!-- Tabla de Platerak -->
+            <TableView fx:id="table" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colIzena" text="Izena" />
+                    <TableColumn fx:id="colMota" text="Mota" />
+                    <TableColumn fx:id="colPrezioa" text="Prezioa" />
+                    <TableColumn fx:id="colMotaId" text="Mota ID" />
+                    <TableColumn fx:id="colAkzioak" text="Akzioak" />
+                </columns>
+            </TableView>
+        </VBox>
+    </children>
+</AnchorPane>

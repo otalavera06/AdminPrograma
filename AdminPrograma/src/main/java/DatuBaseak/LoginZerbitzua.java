@@ -9,7 +9,7 @@ import java.net.http.HttpResponse;
  * Erabiltzailearen login-a API bidez egiten duen klasea.
  * EZ du MySQL-era konektatzen; C# API1-era deitzen du zuzenean.
  */
-public class Erabiltzailea {
+public class LoginZerbitzua {
 
     // API1-eko oinarrizko URLa (zure C# API-a)
     private static final String API_BASE_URL = "http://localhost:5005/api";

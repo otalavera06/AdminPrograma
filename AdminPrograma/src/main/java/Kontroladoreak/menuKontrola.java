@@ -76,9 +76,14 @@ public class menuKontrola implements Initializable {
         });
 
         // Conexión de botones del menú
-        btnList2.setOnAction(e ->
-                kargatuPantaila("/org/example/adminprograma/Pantailak/Langileak.fxml")
-        );
+        btnList1.setOnAction(e -> kargatuPantaila("/org/example/adminprograma/Pantailak/Produktuak.fxml"));
+        btnList2.setOnAction(e -> kargatuPantaila("/org/example/adminprograma/Pantailak/Langileak.fxml"));
+        btnList3.setOnAction(e -> kargatuPantaila("/org/example/adminprograma/Pantailak/Erreserbak.fxml"));
+        // btnList4 no se usa en el FXML actual
+        btnList5.setOnAction(e -> kargatuPantaila("/org/example/adminprograma/Pantailak/Fakturak.fxml"));
+        btnList6.setOnAction(e -> kargatuPantaila("/org/example/adminprograma/Pantailak/Erabiltzaileak.fxml"));
+        btnList7.setOnAction(e -> kargatuPantaila("/org/example/adminprograma/Pantailak/Platerak.fxml"));
+        btnList8.setOnAction(e -> kargatuPantaila("/org/example/adminprograma/Pantailak/Stock.fxml"));
     }
 
     @FXML

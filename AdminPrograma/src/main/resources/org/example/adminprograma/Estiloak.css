@@ -106,3 +106,10 @@
     -fx-pref-height: 40px;       /* altura del área del encabezado */
 }
 
+/* Eliminar lineas verticales de la tabla */
+.table-view .table-column {
+    -fx-border-width: 0px;
+}
+.table-cell {
+    -fx-border-color: transparent;
+}
