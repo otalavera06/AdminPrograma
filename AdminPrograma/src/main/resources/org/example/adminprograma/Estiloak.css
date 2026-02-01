@@ -18,7 +18,7 @@
     -fx-background-color: transparent;
     -fx-text-fill: white;
     -fx-font-family: "Verdana Bold";
-    -fx-font-size: 14px;
+    -fx-font-size: 12px;
     -fx-alignment: CENTER;
 }
 /* Alternancia de filas */
@@ -58,33 +58,43 @@
 .table-cell .graphic {
     -fx-padding: 0 5 0 5;
 }
-/* Switch estilo móvil */
+/* Switch estilo móvil profesional */
 .switch-toggle {
-    -fx-background-color: #ccc;
-    -fx-background-radius: 15;
-    -fx-padding: 0;
-    -fx-min-width: 40;
-    -fx-min-height: 20;
+    -fx-background-color: #e0e0e0;
+    -fx-border-color: #bfbfbf;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-border-width: 1;
+    -fx-text-fill: transparent;
     -fx-alignment: CENTER_LEFT;
+    -fx-padding: 3;
+    -fx-min-width: 50;
+    -fx-max-width: 50;
+    -fx-min-height: 26;
+    -fx-max-height: 26;
 }
 
 .switch-toggle .thumb {
     -fx-background-color: white;
-    -fx-background-radius: 10;
+    -fx-background-radius: 100;
+    -fx-min-width: 18;
+    -fx-min-height: 18;
     -fx-pref-width: 18;
     -fx-pref-height: 18;
-    -fx-translate-x: 1;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 2,0,0,1);
+    -fx-max-width: 18;
+    -fx-max-height: 18;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 2, 0, 0, 1);
+    -fx-translate-x: 0;
 }
 
 /* Estado activado */
 .switch-toggle:selected {
-    -fx-background-color: #4A90E2; /* azul activado */
-    -fx-alignment: CENTER_RIGHT;
+    -fx-background-color: #4A90E2;
+    -fx-border-color: #357ABD;
 }
 
 .switch-toggle:selected .thumb {
-    -fx-translate-x: 21; /* mueve el círculo a la derecha */
+    -fx-translate-x: 24; /* 50 (width) - 6 (pad) - 2 (border) - 18 (thumb) = 24 */
 }
 /* Estilo del texto de los encabezados */
 .table-view .column-header .label {
@@ -112,4 +122,90 @@
 }
 .table-cell {
     -fx-border-color: transparent;
+    -fx-alignment: CENTER; /* Centered content */
+    -fx-font-size: 14px;   /* Better readability */
+}
+
+/* Larger vertical rows (10-15 rows per page fit well with ~45-50px on 1080p usually, or smaller screens) */
+.table-view {
+    -fx-fixed-cell-size: 50px;
+    -fx-font-size: 14px;
+}
+
+/* Pagination Styles */
+.pagination-button {
+    -fx-background-color: #B5424B;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+    -fx-padding: 8 20 8 20; /* Fitt's Law: larger clickable area */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+.pagination-button:hover {
+    -fx-background-color: #d65a64;
+}
+.pagination-button:disabled {
+    -fx-background-color: #cccccc;
+    -fx-text-fill: #888888;
+}
+
+.pagination-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+/* Dialog Styles - Professional Look */
+.dialog-pane {
+    -fx-background-color: #f4f4f4;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #B5424B;
+    -fx-padding: 15px;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-font-family: "Verdana Bold";
+}
+
+.dialog-pane .content {
+    -fx-padding: 20px;
+}
+
+.dialog-pane .label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+    -fx-font-weight: bold;
+}
+
+.dialog-pane .text-field, .dialog-pane .password-field {
+    -fx-background-color: white;
+    -fx-border-color: #bfbfbf;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+
+.dialog-pane .text-field:focused, .dialog-pane .password-field:focused {
+    -fx-border-color: #B5424B;
+    -fx-effect: dropshadow(three-pass-box, rgba(181, 66, 75, 0.2), 5, 0, 0, 0);
+}
+
+.dialog-pane .button {
+    -fx-background-color: #666666;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-padding: 8px 20px;
+}
+
+.dialog-pane .button:hover {
+    -fx-background-color: #888888;
 }

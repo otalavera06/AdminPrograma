@@ -30,8 +30,16 @@ public class ErabiltzaileaKontrola {
     @FXML private TableColumn<Erabiltzailea, String> colPasahitza;
     @FXML private TableColumn<Erabiltzailea, Void> colAkzioak;
     @FXML private Button btnInsert;
+    @FXML private Button btnAtzera;
+    @FXML private Button btnAurrera;
+    @FXML private Label lblOrrialdea;
 
-    private static final String API_BASE_URL = "http://localhost:5005/api";
+    private java.util.List<Erabiltzailea> masterData = new java.util.ArrayList<>();
+    private int currentPage = 0;
+    private static final int ROWS_PER_PAGE = 13;
+
+    // NOTE: C# Controller for Erabiltzaileak might be missing or named differently (e.g. ErregistroakController or LangileakController)
+    private static final String API_BASE_URL = "http://192.168.1.104:5005/api";
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -46,7 +54,48 @@ public class ErabiltzaileaKontrola {
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        btnAtzera.setOnAction(e -> {
+            if (currentPage > 0) {
+                currentPage--;
+                updatePagination();
+            }
+        });
+
+        btnAurrera.setOnAction(e -> {
+            int totalPages = (int) Math.ceil((double) masterData.size() / ROWS_PER_PAGE);
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                updatePagination();
+            }
+        });
+
         kargatuDatuak();
+    }
+
+    private void updatePagination() {
+        if (masterData == null || masterData.isEmpty()) {
+            table.getItems().clear();
+            lblOrrialdea.setText("0 / 0");
+            btnAtzera.setDisable(true);
+            btnAurrera.setDisable(true);
+            return;
+        }
+
+        int totalPages = (int) Math.ceil((double) masterData.size() / ROWS_PER_PAGE);
+
+        if (currentPage < 0) currentPage = 0;
+        if (currentPage >= totalPages) currentPage = totalPages - 1;
+
+        int fromIndex = currentPage * ROWS_PER_PAGE;
+        int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, masterData.size());
+
+        List<Erabiltzailea> pageItems = masterData.subList(fromIndex, toIndex);
+        table.getItems().setAll(pageItems);
+
+        lblOrrialdea.setText((currentPage + 1) + " / " + totalPages);
+
+        btnAtzera.setDisable(currentPage == 0);
+        btnAurrera.setDisable(currentPage >= totalPages - 1);
     }
 
     private void kargatuDatuak() {
@@ -89,7 +138,7 @@ public class ErabiltzaileaKontrola {
         });
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_BASE_URL + "/Erabiltzailea"))
+                .uri(URI.create(API_BASE_URL + "/Erabiltzaileak"))
                 .GET()
                 .build();
 
@@ -98,7 +147,11 @@ public class ErabiltzaileaKontrola {
                 .thenAccept(json -> {
                     try {
                         List<Erabiltzailea> list = mapper.readValue(json, new TypeReference<List<Erabiltzailea>>() {});
-                        Platform.runLater(() -> table.getItems().setAll(list));
+                        Platform.runLater(() -> {
+                            masterData = new java.util.ArrayList<>(list);
+                            currentPage = 0;
+                            updatePagination();
+                        });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -115,7 +168,10 @@ public class ErabiltzaileaKontrola {
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(resp -> System.out.println("Update OK: " + resp.statusCode()));
+                    .thenAccept(resp -> {
+                        System.out.println("Update OK: " + resp.statusCode());
+                        Platform.runLater(this::kargatuDatuak);
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,16 +184,17 @@ public class ErabiltzaileaKontrola {
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(resp -> Platform.runLater(() ->
-                        table.getItems().removeIf(u -> u.getId() == id)
-                ));
+                .thenAccept(resp -> {
+                    System.out.println("Delete OK: " + resp.statusCode());
+                    Platform.runLater(this::kargatuDatuak);
+                });
     }
 
     private void insertErabiltzailea(Erabiltzailea u) {
         try {
             String json = buildJson(u);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_BASE_URL + "/Erabiltzailea"))
+                    .uri(URI.create(API_BASE_URL + "/Erabiltzaileak"))
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .header("Content-Type", "application/json")
                     .build();
@@ -145,7 +202,7 @@ public class ErabiltzaileaKontrola {
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(resp -> {
                         System.out.println("Insert OK: " + resp.statusCode());
-                        kargatuDatuak();
+                        Platform.runLater(this::kargatuDatuak);
                     });
         } catch (Exception e) {
             e.printStackTrace();
@@ -198,6 +255,7 @@ public class ErabiltzaileaKontrola {
         Dialog<Erabiltzailea> dialog = new Dialog<>();
         dialog.setTitle("Erabiltzailea eguneratu");
         dialog.setHeaderText("Aldatu erabiltzailearen datuak:");
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/org/example/adminprograma/Estiloak.css").toExternalForm());
         ButtonType okButton = new ButtonType("Gorde", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(okButton, ButtonType.CANCEL);
 

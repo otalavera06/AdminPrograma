@@ -12,7 +12,7 @@ import java.net.http.HttpResponse;
 public class LoginZerbitzua {
 
     // API1-eko oinarrizko URLa (zure C# API-a)
-    private static final String API_BASE_URL = "http://localhost:5005/api";
+    private static final String API_BASE_URL = "http://192.168.1.104:5005";
 
     private final HttpClient client = HttpClient.newHttpClient();
 
@@ -34,7 +34,7 @@ public class LoginZerbitzua {
             );
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_BASE_URL + "/Langilea/login"))
+                    .uri(URI.create(API_BASE_URL + "/api/Langileak/login"))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .build();
@@ -43,6 +43,11 @@ public class LoginZerbitzua {
                     client.send(request, HttpResponse.BodyHandlers.ofString());
 
             int kodea = response.statusCode();
+            
+            if (kodea != 200) {
+                System.out.println("Login errorea. Kodea: " + kodea);
+                System.out.println("Erantzuna: " + response.body());
+            }
 
             // 200 OK  → login ondo
             // 401     → erabiltzailea/pasahitza oker

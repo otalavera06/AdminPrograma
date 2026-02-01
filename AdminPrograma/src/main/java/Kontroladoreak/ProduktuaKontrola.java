@@ -15,6 +15,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
+import java.io.File;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,7 +36,15 @@ public class ProduktuaKontrola {
     @FXML private TableColumn<Produktua, Void> colAkzioak;
     @FXML private Button btnInsert;
 
-    private static final String API_BASE_URL = "http://localhost:5005/api";
+    @FXML private Button btnAtzera;
+    @FXML private Button btnAurrera;
+    @FXML private Label lblOrrialdea;
+
+    private java.util.List<Produktua> masterData = new java.util.ArrayList<>();
+    private int currentPage = 0;
+    private static final int ROWS_PER_PAGE = 13;
+
+    private static final String API_BASE_URL = "http://192.168.1.104:5005/api";
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -42,22 +52,60 @@ public class ProduktuaKontrola {
 
     @FXML
     public void initialize() {
-        btnInsert.setText("Berria");
-        btnInsert.getStyleClass().add("berria-button");
-        HBox.setMargin(btnInsert, new Insets(10, 10, 0, 10));
-        btnInsert.setOnAction(e -> mostrarDialogoInsert());
+        // "Berria" botoia kendu (erabiltzailearen eskaera)
+        if (btnInsert != null) {
+            btnInsert.setVisible(false);
+            btnInsert.setManaged(false);
+        }
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        // Pagination buttons
+        btnAtzera.setOnAction(e -> {
+            if (currentPage > 0) {
+                currentPage--;
+                updatePagination();
+            }
+        });
+        btnAurrera.setOnAction(e -> {
+            int maxPage = (int) Math.ceil((double) masterData.size() / ROWS_PER_PAGE) - 1;
+            if (currentPage < maxPage) {
+                currentPage++;
+                updatePagination();
+            }
+        });
+
         kargatuDatuak();
+    }
+
+    private void updatePagination() {
+        if (masterData == null || masterData.isEmpty()) {
+            table.getItems().clear();
+            lblOrrialdea.setText("0 / 0");
+            btnAtzera.setDisable(true);
+            btnAurrera.setDisable(true);
+            return;
+        }
+
+        int totalPages = (int) Math.ceil((double) masterData.size() / ROWS_PER_PAGE);
+        if (currentPage >= totalPages) currentPage = totalPages - 1;
+        if (currentPage < 0) currentPage = 0;
+
+        int fromIndex = currentPage * ROWS_PER_PAGE;
+        int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, masterData.size());
+
+        List<Produktua> pageItems = masterData.subList(fromIndex, toIndex);
+        table.getItems().setAll(pageItems);
+
+        lblOrrialdea.setText((currentPage + 1) + " / " + totalPages);
+        btnAtzera.setDisable(currentPage == 0);
+        btnAurrera.setDisable(currentPage >= totalPages - 1);
     }
 
     private void kargatuDatuak() {
         colIzena.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getIzena()));
         colPrezioa.setCellValueFactory(data -> new SimpleDoubleProperty(data.getValue().getPrezioa()));
         colStock.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getStock()));
-        colIrudia.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getIrudia_path()));
-        colMota.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getProduktuen_motak_id()));
 
         colAkzioak.setCellFactory(col -> new TableCell<>() {
             private final Button btnUpdate = new Button("✎");
@@ -68,6 +116,7 @@ public class ProduktuaKontrola {
                 btnUpdate.getStyleClass().add("edit-button");
                 btnDelete.getStyleClass().add("delete-button");
                 box.getStyleClass().add("actions-cell");
+                box.setAlignment(javafx.geometry.Pos.CENTER);
 
                 btnUpdate.setOnAction(e -> {
                     Produktua p = getTableView().getItems().get(getIndex());
@@ -92,68 +141,162 @@ public class ProduktuaKontrola {
         });
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_BASE_URL + "/Produktua"))
+                .uri(URI.create(API_BASE_URL + "/Produktuak"))
                 .GET()
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenAccept(json -> {
-                    try {
-                        List<Produktua> list = mapper.readValue(json, new TypeReference<List<Produktua>>() {});
-                        Platform.runLater(() -> table.getItems().setAll(list));
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                .thenAccept(response -> {
+                    if (response.statusCode() == 200) {
+                        try {
+                            List<Produktua> list = mapper.readValue(response.body(), new TypeReference<List<Produktua>>() {});
+                            Platform.runLater(() -> {
+                                masterData = list;
+                                currentPage = 0;
+                                updatePagination();
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            Platform.runLater(() -> erakutsiErrorea("Errorea datuak irakurtzean: " + e.getMessage()));
+                        }
+                    } else {
+                        Platform.runLater(() -> erakutsiErrorea("Zerbitzari errorea: " + response.statusCode()));
                     }
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    Platform.runLater(() -> erakutsiErrorea("Konexio errorea: " + e.getMessage()));
+                    return null;
                 });
     }
 
+    private void erakutsiErrorea(String mezua) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Errorea");
+        alert.setHeaderText(null);
+        alert.setContentText(mezua);
+        alert.showAndWait();
+    }
+
     private void updateProduktua(Produktua p) {
+        if (!isMotaValid(p.getProduktuen_motak_id())) {
+            erakutsiErrorea("Errorea: Produktu mota ez da existitzen (ID: " + p.getProduktuen_motak_id() + ")");
+            return;
+        }
         try {
             String json = buildJson(p);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_BASE_URL + "/Produktua/" + p.getId()))
+                    .uri(URI.create(API_BASE_URL + "/Produktuak/" + p.getId()))
                     .PUT(HttpRequest.BodyPublishers.ofString(json))
                     .header("Content-Type", "application/json")
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(resp -> System.out.println("Update OK: " + resp.statusCode()));
+                    .thenAccept(resp -> {
+                        if (resp.statusCode() == 200 || resp.statusCode() == 204) {
+                            System.out.println("Update OK: " + resp.statusCode());
+                            kargatuDatuak(); // Recargar datos para ver cambios
+                        } else {
+                            Platform.runLater(() -> erakutsiErrorea("Update error: " + resp.statusCode() + " - " + resp.body()));
+                        }
+                    })
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        Platform.runLater(() -> erakutsiErrorea("Update konexio errorea: " + e.getMessage()));
+                        return null;
+                    });
         } catch (Exception e) {
             e.printStackTrace();
+            erakutsiErrorea("Errorea eguneratzean: " + e.getMessage());
         }
     }
 
     private void deleteProduktua(int id) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_BASE_URL + "/Produktua/" + id))
+                .uri(URI.create(API_BASE_URL + "/Produktuak/" + id))
                 .DELETE()
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(resp -> Platform.runLater(() ->
-                        table.getItems().removeIf(p -> p.getId() == id)
-                ));
+                .thenAccept(resp -> Platform.runLater(() -> {
+                    if (resp.statusCode() == 200 || resp.statusCode() == 204) {
+                        table.getItems().removeIf(p -> p.getId() == id);
+                    } else {
+                        erakutsiErrorea("Delete error: " + resp.statusCode() + " - " + resp.body());
+                    }
+                }))
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    Platform.runLater(() -> erakutsiErrorea("Delete konexio errorea: " + e.getMessage()));
+                    return null;
+                });
     }
 
     private void insertProduktua(Produktua p) {
+        if (!isMotaValid(p.getProduktuen_motak_id())) {
+            erakutsiErrorea("Errorea: Produktu mota ez da existitzen (ID: " + p.getProduktuen_motak_id() + ")");
+            return;
+        }
         try {
             String json = buildJson(p);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_BASE_URL + "/Produktua"))
+                    .uri(URI.create(API_BASE_URL + "/Produktuak"))
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .header("Content-Type", "application/json")
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(resp -> {
-                        System.out.println("Insert OK: " + resp.statusCode());
-                        kargatuDatuak();
+                        if (resp.statusCode() == 200 || resp.statusCode() == 201) {
+                            System.out.println("Insert OK: " + resp.statusCode());
+                            kargatuDatuak();
+                        } else {
+                            Platform.runLater(() -> erakutsiErrorea("Insert error: " + resp.statusCode() + " - " + resp.body()));
+                        }
+                    })
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        Platform.runLater(() -> erakutsiErrorea("Insert konexio errorea: " + e.getMessage()));
+                        return null;
                     });
         } catch (Exception e) {
             e.printStackTrace();
+            erakutsiErrorea("Errorea txertatzean: " + e.getMessage());
         }
     }
+
+    private boolean isMotaValid(int id) {
+        return motaOptions.stream().anyMatch(m -> m.id == id);
+    }
+
+    // Helper inner class for ComboBox items
+    private static class MotaOption {
+        int id;
+        String name;
+
+        public MotaOption(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    // List of available product types
+    private final java.util.List<MotaOption> motaOptions = java.util.List.of(
+            new MotaOption(6, "edariak"),
+            new MotaOption(7, "txutxeriak"),
+            new MotaOption(8, "maki"),
+            new MotaOption(9, "uramaki"),
+            new MotaOption(10, "narezushi"),
+            new MotaOption(11, "inarizushi"),
+            new MotaOption(12, "oshizushi"),
+            new MotaOption(13, "nigiri"),
+            new MotaOption(14, "postreak")
+    );
 
     private void mostrarDialogoInsert() {
         Dialog<Produktua> dialog = new Dialog<>();
@@ -170,14 +313,10 @@ public class ProduktuaKontrola {
         TextField tfIzena = new TextField();
         TextField tfPrezioa = new TextField();
         TextField tfStock = new TextField();
-        TextField tfIrudia = new TextField();
-        TextField tfMota = new TextField();
 
         grid.add(new Label("Izena:"), 0, 0); grid.add(tfIzena, 1, 0);
         grid.add(new Label("Prezioa:"), 0, 1); grid.add(tfPrezioa, 1, 1);
         grid.add(new Label("Stock:"), 0, 2); grid.add(tfStock, 1, 2);
-        grid.add(new Label("Irudia Path:"), 0, 3); grid.add(tfIrudia, 1, 3);
-        grid.add(new Label("Mota ID:"), 0, 4); grid.add(tfMota, 1, 4);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -186,13 +325,12 @@ public class ProduktuaKontrola {
             try {
                 Double.parseDouble(tfPrezioa.getText());
                 Integer.parseInt(tfStock.getText());
-                Integer.parseInt(tfMota.getText());
             } catch (NumberFormatException e) {
                 event.consume();
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Errorea");
                 alert.setHeaderText("Datu okerrak");
-                alert.setContentText("Prezioa, Stock eta Mota ID zenbakiak izan behar dira.");
+                alert.setContentText("Prezioa eta Stock zenbakiak izan behar dira.");
                 alert.showAndWait();
             }
         });
@@ -201,10 +339,21 @@ public class ProduktuaKontrola {
             if (button == okButton) {
                 Produktua p = new Produktua();
                 p.setIzena(tfIzena.getText());
-                p.setIrudia_path(tfIrudia.getText());
                 p.setPrezioa(Double.parseDouble(tfPrezioa.getText()));
-                p.setStock(Integer.parseInt(tfStock.getText()));
-                p.setProduktuen_motak_id(Integer.parseInt(tfMota.getText()));
+                int stock = Integer.parseInt(tfStock.getText());
+                p.setStock(stock);
+                
+                // Balio lehenetsiak
+                p.setIrudia_path("");
+                // Mota lehenetsia 8 (Maki)
+                p.setProduktuen_motak_id(8);
+
+                // Stock Minimoa: beti 5
+                p.setStock_min(5);
+
+                // Stock Maximoa: default logika
+                p.setStock_max(Math.max(stock, 20));
+
                 return p;
             }
             return null;
@@ -228,14 +377,10 @@ public class ProduktuaKontrola {
         TextField tfIzena = new TextField(p.getIzena());
         TextField tfPrezioa = new TextField(String.valueOf(p.getPrezioa()));
         TextField tfStock = new TextField(String.valueOf(p.getStock()));
-        TextField tfIrudia = new TextField(p.getIrudia_path());
-        TextField tfMota = new TextField(String.valueOf(p.getProduktuen_motak_id()));
 
         grid.add(new Label("Izena:"), 0, 0); grid.add(tfIzena, 1, 0);
         grid.add(new Label("Prezioa:"), 0, 1); grid.add(tfPrezioa, 1, 1);
         grid.add(new Label("Stock:"), 0, 2); grid.add(tfStock, 1, 2);
-        grid.add(new Label("Irudia Path:"), 0, 3); grid.add(tfIrudia, 1, 3);
-        grid.add(new Label("Mota ID:"), 0, 4); grid.add(tfMota, 1, 4);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -244,13 +389,12 @@ public class ProduktuaKontrola {
             try {
                 Double.parseDouble(tfPrezioa.getText());
                 Integer.parseInt(tfStock.getText());
-                Integer.parseInt(tfMota.getText());
             } catch (NumberFormatException e) {
                 event.consume();
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Errorea");
                 alert.setHeaderText("Datu okerrak");
-                alert.setContentText("Prezioa, Stock eta Mota ID zenbakiak izan behar dira.");
+                alert.setContentText("Prezioa eta Stock zenbakiak izan behar dira.");
                 alert.showAndWait();
             }
         });
@@ -258,10 +402,29 @@ public class ProduktuaKontrola {
         dialog.setResultConverter(button -> {
             if (button == okButton) {
                 p.setIzena(tfIzena.getText());
-                p.setIrudia_path(tfIrudia.getText());
                 p.setPrezioa(Double.parseDouble(tfPrezioa.getText()));
-                p.setStock(Integer.parseInt(tfStock.getText()));
-                p.setProduktuen_motak_id(Integer.parseInt(tfMota.getText()));
+                int stock = Integer.parseInt(tfStock.getText());
+                p.setStock(stock);
+                
+                // Mota ID eta Irudia mantendu egiten dira, baina Stock Maximoa eguneratu daiteke stock berriarekin
+                int typeId = p.getProduktuen_motak_id();
+
+                // Eguneratu Stock Maximoa motaren arabera
+                int stockMax;
+                if (typeId == 6) {
+                    stockMax = 60;
+                } else if (typeId == 7) {
+                    stockMax = 40;
+                } else if (typeId == 8 || typeId == 9 || typeId == 11 || typeId == 13) {
+                    stockMax = 80;
+                } else if (typeId == 14) {
+                    stockMax = 60;
+                } else {
+                    stockMax = Math.max(stock, 20);
+                }
+                p.setStock_max(stockMax);
+                p.setStock_min(5);
+
                 return p;
             }
             return null;

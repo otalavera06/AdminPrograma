@@ -47,8 +47,19 @@ public class LangileaKontrola {
     @FXML
     private Button btnInsertLangilea;
 
+    @FXML
+    private Button btnAtzera;
+    @FXML
+    private Button btnAurrera;
+    @FXML
+    private Label lblOrrialdea;
+
+    private java.util.List<Langilea> masterData = new java.util.ArrayList<>();
+    private int currentPage = 0;
+    private static final int ROWS_PER_PAGE = 13; // 10-15 bitartean
+
     // C# API1 aplikazioaren oinarrizko URLa
-    private static final String API_BASE_URL = "http://localhost:5005/api";
+    private static final String API_BASE_URL = "http://192.168.1.104:5005";
 
     private final HttpClient client = HttpClient.newHttpClient();
 
@@ -68,7 +79,47 @@ public class LangileaKontrola {
         btnInsertLangilea.setOnAction(e -> mostrarDialogoInsert());
         langileakTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        // Pagination buttons
+        btnAtzera.setOnAction(e -> {
+            if (currentPage > 0) {
+                currentPage--;
+                updatePagination();
+            }
+        });
+        btnAurrera.setOnAction(e -> {
+            int maxPage = (int) Math.ceil((double) masterData.size() / ROWS_PER_PAGE) - 1;
+            if (currentPage < maxPage) {
+                currentPage++;
+                updatePagination();
+            }
+        });
+
         kargatuLangileak();
+    }
+
+    private void updatePagination() {
+        if (masterData == null || masterData.isEmpty()) {
+            langileakTable.getItems().clear();
+            lblOrrialdea.setText("0 / 0");
+            btnAtzera.setDisable(true);
+            btnAurrera.setDisable(true);
+            return;
+        }
+
+        int totalPages = (int) Math.ceil((double) masterData.size() / ROWS_PER_PAGE);
+        // Ensure current page is valid
+        if (currentPage >= totalPages) currentPage = totalPages - 1;
+        if (currentPage < 0) currentPage = 0;
+
+        int fromIndex = currentPage * ROWS_PER_PAGE;
+        int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, masterData.size());
+
+        List<Langilea> pageItems = masterData.subList(fromIndex, toIndex);
+        langileakTable.getItems().setAll(pageItems);
+
+        lblOrrialdea.setText((currentPage + 1) + " / " + totalPages);
+        btnAtzera.setDisable(currentPage == 0);
+        btnAurrera.setDisable(currentPage >= totalPages - 1);
     }
 
     /**
@@ -125,6 +176,7 @@ public class LangileaKontrola {
                 btnUpdate.getStyleClass().add("edit-button");
                 btnDelete.getStyleClass().add("delete-button");
                 box.getStyleClass().add("actions-cell");
+                box.setAlignment(javafx.geometry.Pos.CENTER); // Center buttons
 
                 btnUpdate.setOnAction(e -> {
                     Langilea langilea = getTableView().getItems().get(getIndex());
@@ -150,7 +202,7 @@ public class LangileaKontrola {
 
         // API → GET api/Langilea
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_BASE_URL + "/Langilea"))
+                .uri(URI.create(API_BASE_URL + "/api/Langileak"))
                 .GET()
                 .build();
 
@@ -162,7 +214,11 @@ public class LangileaKontrola {
                                 json,
                                 new TypeReference<List<Langilea>>() {}
                         );
-                        Platform.runLater(() -> langileakTable.getItems().setAll(langileak));
+                        Platform.runLater(() -> {
+                            masterData = langileak;
+                            currentPage = 0;
+                            updatePagination();
+                        });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -177,15 +233,16 @@ public class LangileaKontrola {
             String json = buildLangileaJson(l);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_BASE_URL + "/Langilea/" + l.getId()))
+                    .uri(URI.create(API_BASE_URL + "/api/Langileak/" + l.getId()))
                     .PUT(HttpRequest.BodyPublishers.ofString(json))
                     .header("Content-Type", "application/json")
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(resp ->
-                            System.out.println("Update OK (" + l.getId() + "): " + resp.statusCode())
-                    );
+                    .thenAccept(resp -> {
+                        System.out.println("Update OK (" + l.getId() + "): " + resp.statusCode());
+                        kargatuLangileak(); // Taula eguneratu
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -196,14 +253,15 @@ public class LangileaKontrola {
      */
     private void deleteLangilea(int id) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_BASE_URL + "/Langilea/" + id))
+                .uri(URI.create(API_BASE_URL + "/api/Langileak/" + id))
                 .DELETE()
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(resp -> Platform.runLater(() ->
-                        langileakTable.getItems().removeIf(l -> l.getId() == id)
-                ));
+                .thenAccept(resp -> {
+                    System.out.println("Delete OK: " + resp.statusCode());
+                    kargatuLangileak();
+                });
     }
 
     /**
@@ -213,6 +271,7 @@ public class LangileaKontrola {
         Dialog<Langilea> dialog = new Dialog<>();
         dialog.setTitle("Langilea sartu");
         dialog.setHeaderText("Sartu langilearen informazioa:");
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/org/example/adminprograma/Estiloak.css").toExternalForm());
 
         ButtonType insertButtonType = new ButtonType("Sartu", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(insertButtonType, ButtonType.CANCEL);
@@ -228,7 +287,13 @@ public class LangileaKontrola {
         TextField tfTelefonoa = new TextField();
         TextField tfErabiltzailea = new TextField();
         PasswordField tfPasahitza = new PasswordField();
-        ToggleButton toggleBaimena = new ToggleButton("Baimena");
+        
+        // Baimena Switch
+        ToggleButton toggleBaimena = new ToggleButton();
+        Region thumb = new Region();
+        toggleBaimena.getStyleClass().add("switch-toggle");
+        thumb.getStyleClass().add("thumb");
+        toggleBaimena.setGraphic(thumb);
 
         grid.add(new Label("Izena:"),        0, 0);
         grid.add(tfIzena,                    1, 0);
@@ -246,6 +311,18 @@ public class LangileaKontrola {
         grid.add(toggleBaimena,              1, 6);
 
         dialog.getDialogPane().setContent(grid);
+
+        // Validation
+        Button btnOk = (Button) dialog.getDialogPane().lookupButton(insertButtonType);
+        btnOk.addEventFilter(javafx.event.ActionEvent.ACTION, event -> {
+            if (tfPasahitza.getText().trim().isEmpty()) {
+                showErrorAndFocus(event, tfPasahitza, "Pasahitza ezin da hutsik egon.");
+            } else if (tfErabiltzailea.getText().trim().isEmpty()) {
+                showErrorAndFocus(event, tfErabiltzailea, "Erabiltzailea ezin da hutsik egon.");
+            } else if (tfIzena.getText().trim().isEmpty()) {
+                showErrorAndFocus(event, tfIzena, "Izena ezin da hutsik egon.");
+            }
+        });
 
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == insertButtonType) {
@@ -272,6 +349,7 @@ public class LangileaKontrola {
         Dialog<Langilea> dialog = new Dialog<>();
         dialog.setTitle("Langilea eguneratu");
         dialog.setHeaderText("Aldatu langilearen datuak:");
+        dialog.getDialogPane().getStylesheets().add(getClass().getResource("/org/example/adminprograma/Estiloak.css").toExternalForm());
 
         ButtonType updateButtonType = new ButtonType("Gorde", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(updateButtonType, ButtonType.CANCEL);
@@ -288,8 +366,6 @@ public class LangileaKontrola {
         TextField tfErabiltzailea = new TextField(langilea.getErabiltzailea());
         PasswordField tfPasahitza = new PasswordField();
         tfPasahitza.setText(langilea.getPasahitza());
-        ToggleButton toggleBaimena = new ToggleButton("Baimena");
-        toggleBaimena.setSelected(langilea.isBaimena());
 
         grid.add(new Label("Izena:"),        0, 0);
         grid.add(tfIzena,                    1, 0);
@@ -303,8 +379,6 @@ public class LangileaKontrola {
         grid.add(tfErabiltzailea,            1, 4);
         grid.add(new Label("Pasahitza:"),    0, 5);
         grid.add(tfPasahitza,                1, 5);
-        grid.add(new Label("Baimena:"),      0, 6);
-        grid.add(toggleBaimena,              1, 6);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -316,7 +390,6 @@ public class LangileaKontrola {
                 langilea.setTelefonoa(tfTelefonoa.getText());
                 langilea.setErabiltzailea(tfErabiltzailea.getText());
                 langilea.setPasahitza(tfPasahitza.getText());
-                langilea.setBaimena(toggleBaimena.isSelected());
                 return langilea;
             }
             return null;
@@ -333,7 +406,7 @@ public class LangileaKontrola {
             String json = buildLangileaJson(l);
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_BASE_URL + "/Langilea"))
+                    .uri(URI.create(API_BASE_URL + "/api/Langileak"))
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .header("Content-Type", "application/json")
                     .build();
@@ -378,5 +451,15 @@ public class LangileaKontrola {
     private String escape(String value) {
         if (value == null) return "";
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
+    }
+
+    private void showErrorAndFocus(javafx.event.ActionEvent event, Control control, String message) {
+        event.consume(); // Gelditu gertaera (ez itxi dialogoa)
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Errorea");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+        control.requestFocus();
     }
 }

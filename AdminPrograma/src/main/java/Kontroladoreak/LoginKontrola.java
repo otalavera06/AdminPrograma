@@ -32,6 +32,10 @@ public class LoginKontrola {
         if (lblErrorea != null) {
             lblErrorea.setText("");
         }
+        
+        // Enter tekla sakatzean logina egin
+        txtPasahitza.setOnAction(this::onLoginClick);
+        txtErabiltzailea.setOnAction(this::onLoginClick);
     }
 
     // LOGIN botoia: onAction="#onLoginClick"

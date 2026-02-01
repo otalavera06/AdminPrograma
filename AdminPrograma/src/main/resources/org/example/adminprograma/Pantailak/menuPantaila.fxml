@@ -34,7 +34,6 @@
 
                         <children>
                             <Button fx:id="btnList1" styleClass="menuButton" text="Produktuak" />
-                            <Button fx:id="btnList7" styleClass="menuButton" text="Platerak" />
                             <Button fx:id="btnList2" styleClass="menuButton" text="Langileak" />
                             <Button fx:id="btnList6" styleClass="menuButton" text="Erabiltzaileak" />
                             <Button fx:id="btnList3" styleClass="menuButton" text="Erreserbak" />

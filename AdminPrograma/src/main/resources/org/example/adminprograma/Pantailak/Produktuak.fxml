@@ -19,11 +19,16 @@
                     <TableColumn fx:id="colIzena" text="Izena" />
                     <TableColumn fx:id="colPrezioa" text="Prezioa" />
                     <TableColumn fx:id="colStock" text="Stock" />
-                    <TableColumn fx:id="colIrudia" text="Irudia Path" />
-                    <TableColumn fx:id="colMota" text="Mota ID" />
                     <TableColumn fx:id="colAkzioak" text="Akzioak" />
                 </columns>
             </TableView>
+
+            <!-- Pagination Controls -->
+            <HBox alignment="CENTER" spacing="20" style="-fx-padding: 10;">
+                <Button fx:id="btnAtzera" text="Atzera" styleClass="pagination-button" />
+                <Label fx:id="lblOrrialdea" text="1 / 1" styleClass="pagination-label" />
+                <Button fx:id="btnAurrera" text="Aurrera" styleClass="pagination-button" />
+            </HBox>
         </VBox>
     </children>
 </AnchorPane>

@@ -33,7 +33,15 @@ public class FakturaKontrola {
     @FXML private TableColumn<Faktura, Void> colAkzioak;
     @FXML private Button btnInsert;
 
-    private static final String API_BASE_URL = "http://localhost:5005/api";
+    @FXML private Button btnAtzera;
+    @FXML private Button btnAurrera;
+    @FXML private Label lblOrrialdea;
+
+    private java.util.List<Faktura> masterData = new java.util.ArrayList<>();
+    private int currentPage = 0;
+    private static final int ROWS_PER_PAGE = 13;
+
+    private static final String API_BASE_URL = "http://192.168.1.104:5005/api";
     private final HttpClient client = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
@@ -48,7 +56,46 @@ public class FakturaKontrola {
 
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        // Pagination buttons
+        btnAtzera.setOnAction(e -> {
+            if (currentPage > 0) {
+                currentPage--;
+                updatePagination();
+            }
+        });
+        btnAurrera.setOnAction(e -> {
+            int maxPage = (int) Math.ceil((double) masterData.size() / ROWS_PER_PAGE) - 1;
+            if (currentPage < maxPage) {
+                currentPage++;
+                updatePagination();
+            }
+        });
+
         kargatuDatuak();
+    }
+
+    private void updatePagination() {
+        if (masterData == null || masterData.isEmpty()) {
+            table.getItems().clear();
+            lblOrrialdea.setText("0 / 0");
+            btnAtzera.setDisable(true);
+            btnAurrera.setDisable(true);
+            return;
+        }
+
+        int totalPages = (int) Math.ceil((double) masterData.size() / ROWS_PER_PAGE);
+        if (currentPage >= totalPages) currentPage = totalPages - 1;
+        if (currentPage < 0) currentPage = 0;
+
+        int fromIndex = currentPage * ROWS_PER_PAGE;
+        int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, masterData.size());
+
+        List<Faktura> pageItems = masterData.subList(fromIndex, toIndex);
+        table.getItems().setAll(pageItems);
+
+        lblOrrialdea.setText((currentPage + 1) + " / " + totalPages);
+        btnAtzera.setDisable(currentPage == 0);
+        btnAurrera.setDisable(currentPage >= totalPages - 1);
     }
 
     private void kargatuDatuak() {
@@ -66,6 +113,7 @@ public class FakturaKontrola {
                 btnUpdate.getStyleClass().add("edit-button");
                 btnDelete.getStyleClass().add("delete-button");
                 box.getStyleClass().add("actions-cell");
+                box.setAlignment(javafx.geometry.Pos.CENTER);
 
                 btnUpdate.setOnAction(e -> {
                     Faktura f = getTableView().getItems().get(getIndex());
@@ -90,7 +138,7 @@ public class FakturaKontrola {
         });
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_BASE_URL + "/Faktura"))
+                .uri(URI.create(API_BASE_URL + "/Fakturak"))
                 .GET()
                 .build();
 
@@ -99,7 +147,11 @@ public class FakturaKontrola {
                 .thenAccept(json -> {
                     try {
                         List<Faktura> list = mapper.readValue(json, new TypeReference<List<Faktura>>() {});
-                        Platform.runLater(() -> table.getItems().setAll(list));
+                        Platform.runLater(() -> {
+                            masterData = list;
+                            currentPage = 0;
+                            updatePagination();
+                        });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -116,7 +168,10 @@ public class FakturaKontrola {
                     .build();
 
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(resp -> System.out.println("Update OK: " + resp.statusCode()));
+                    .thenAccept(resp -> {
+                        System.out.println("Update OK: " + resp.statusCode());
+                        Platform.runLater(this::kargatuDatuak);
+                    });
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,16 +184,17 @@ public class FakturaKontrola {
                 .build();
 
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(resp -> Platform.runLater(() ->
-                        table.getItems().removeIf(f -> f.getId() == id)
-                ));
+                .thenAccept(resp -> {
+                    System.out.println("Delete OK: " + resp.statusCode());
+                    Platform.runLater(this::kargatuDatuak);
+                });
     }
 
     private void insertFaktura(Faktura f) {
         try {
             String json = buildJson(f);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_BASE_URL + "/Faktura"))
+                    .uri(URI.create(API_BASE_URL + "/Fakturak"))
                     .POST(HttpRequest.BodyPublishers.ofString(json))
                     .header("Content-Type", "application/json")
                     .build();
@@ -146,7 +202,7 @@ public class FakturaKontrola {
             client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                     .thenAccept(resp -> {
                         System.out.println("Insert OK: " + resp.statusCode());
-                        kargatuDatuak();
+                        Platform.runLater(this::kargatuDatuak);
                     });
         } catch (Exception e) {
             e.printStackTrace();
